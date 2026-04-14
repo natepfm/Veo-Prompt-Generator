@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Veo Prompt Generator</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{min-height:100vh;background:#0f0f1a;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.container{max-width:760px;margin:0 auto;padding:32px 24px}
+h1{font-size:24px;font-weight:700;color:#f8fafc;margin-bottom:6px}
+h2{font-size:16px;font-weight:700;color:#f8fafc;margin-bottom:12px}
+.sub{font-size:13px;color:#94a3b8;margin-bottom:32px}
+.accent{color:#f97316}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:#f97316;color:#fff;font-size:12px;font-weight:700;margin-right:8px}
+.sec{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px;padding:24px;margin-bottom:20px}
+label{display:block;font-size:12px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+input[type="text"],textarea{width:100%;padding:10px 14px;border-radius:8px;border:1px solid #2a2a4a;background:#12121f;color:#e2e8f0;font-size:14px;font-family:inherit;transition:border-color .15s;margin-bottom:16px}
+input[type="text"]:focus,textarea:focus{outline:none;border-color:#f97316}
+textarea{resize:vertical;min-height:80px;line-height:1.5}
+.row{display:flex;gap:12px}.row>*{flex:1}
+.hint{padding:10px 14px;background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.2);border-radius:8px;font-size:12px;color:#fdba74;margin-bottom:16px;line-height:1.5}
+.btn2{background:#1a1a2e;color:#94a3b8;border:1px solid #2a2a4a;width:100%;justify-content:center;padding:10px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center}
+.btn2:hover{border-color:#f97316;color:#e2e8f0}
+.btngen{width:100%;padding:14px;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;background:linear-gradient(135deg,#f97316,#fb923c);color:#fff;border:none;border-radius:10px;cursor:pointer;transition:all .2s}
+.btngen:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(249,115,22,.3)}
+
+/* Upload zone */
+.upload-zone{border:2px dashed #2a2a4a;border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:all .15s;margin-bottom:16px}
+.upload-zone:hover{border-color:#f97316}
+.upload-zone.has-img{border-style:solid;border-color:#22c55e;padding:12px}
+.upload-zone img{max-width:100%;max-height:200px;border-radius:6px}
+.upload-zone p{font-size:13px;color:#64748b;margin-top:8px}
+.upload-zone .up-label{font-size:14px;color:#94a3b8;font-weight:600}
+
+/* Toggle */
+.toggle-row{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.toggle{width:44px;height:24px;border-radius:12px;background:#2a2a4a;cursor:pointer;position:relative;transition:background .2s;border:none;padding:0}
+.toggle.on{background:#f97316}
+.toggle-dot{width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:left .2s}
+.toggle.on .toggle-dot{left:23px}
+.toggle-label{font-size:13px;color:#e2e8f0;font-weight:500}
+
+/* States */
+.sr{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.sr input{margin-bottom:0;flex:1}
+.sk{display:inline-block;padding:3px 8px;border-radius:4px;background:rgba(248,113,113,.1);color:#f87171;font-size:11px;font-weight:600;margin-right:6px}
+.rl{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid #2a2a4a;background:transparent;color:#64748b;cursor:pointer;font-size:16px;flex-shrink:0}
+.rl:hover{border-color:#f87171;color:#f87171}
+
+/* Generator */
+.tabs{display:flex;margin-bottom:20px;border-radius:8px;overflow:hidden;border:1px solid #2a2a4a}
+.tab{flex:1;padding:10px 16px;border:none;cursor:pointer;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;transition:all .15s;background:#1a1a2e;color:#94a3b8}
+.tab.active{background:#f97316;color:#fff}
+.pills{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.pill{padding:6px 14px;border-radius:6px;border:1px solid #2a2a4a;background:#1a1a2e;color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.pill.active{border-color:#f87171;background:rgba(248,113,113,.12);color:#f87171}
+.cards{display:flex;flex-direction:column;gap:10px}
+.card{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:10px;padding:14px 18px;cursor:pointer;transition:all .2s}
+.card:hover{border-color:#f97316}
+.card.cp{background:#0d2818;border-color:#22c55e}
+.ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.cl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#f97316}
+.cs{font-size:11px;font-weight:600;color:#64748b}
+.card.cp .cs{color:#22c55e}
+.ct{font-size:14px;line-height:1.5;color:#e2e8f0}
+.swap{color:#f87171;font-weight:700;background:rgba(248,113,113,.1);border-radius:3px;padding:1px 3px}
+.foot{margin-top:32px;padding:14px 18px;background:#1a1a2e;border-radius:10px;border:1px solid #2a2a4a}
+.fl{font-size:12px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.ft{font-size:13px;color:#94a3b8}
+.gh{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+.btnback{background:#1a1a2e;color:#94a3b8;border:1px solid #2a2a4a;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600}
+.btnback:hover{border-color:#f97316;color:#e2e8f0}
+
+/* Line chips in the parsed preview */
+.parsed-lines{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.pl{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;background:#12121f;border-radius:6px;border:1px solid #2a2a4a;font-size:13px;line-height:1.4}
+.pl-n{min-width:24px;height:24px;display:flex;align-items:center;justify-content:center;background:#2a2a4a;border-radius:5px;font-size:10px;font-weight:700;color:#94a3b8;flex-shrink:0}
+.pl-t{flex:1;color:#e2e8f0}
+.pl-tag{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;flex-shrink:0;border:1px solid #2a2a4a;background:#1a1a2e;color:#94a3b8;transition:all .15s}
+.pl-tag.st{border-color:#f87171;background:rgba(248,113,113,.12);color:#f87171}
+</style>
+</head>
+<body>
+<div class="container" id="app"></div>
+<script>
+// === STATE ===
+var view='setup';
+var pName='';
+var imgData=null; // base64 data URL
+var imgName='';
+var voiceDesc='';
+var camLocked=true;
+var negP='identity drift, wardrobe change, morphing faces, extra limbs, background shift, blurry, plastic skin, text on screen';
+var scriptRaw='';
+var dLines=[]; // {text,isState}
+var dStates=[{name:'',swaps:{}},{name:'',swaps:{}},{name:'',swaps:{}},{name:'',swaps:{}},{name:'',swaps:{}}];
+var swKeys=[];
+var dStatesForGen=[];
+var gTab='broad',gState='',cpCard=null;
+
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/\x3c/g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function detectKeys(){var k={};dLines.forEach(function(l){if(l.isState){var m=l.text.match(/\{([^}]+)\}/g);if(m)m.forEach(function(x){k[x.slice(1,-1)]=1})}});swKeys=Object.keys(k)}
+function fillS(t,sd){var r=t;swKeys.forEach(function(k){r=r.replace(new RegExp('\\{'+k+'\\}','g'),sd.swaps[k]||'{'+k+'}')});return r}
+function hlS(t,sd){var h=esc(t);swKeys.forEach(function(k){var v=sd.swaps[k]||'{'+k+'}';h=h.replace(new RegExp('\\{'+k+'\\}','g'),'<span class="swap">'+esc(v)+'</span>')});return h}
+
+function buildP(dial,lab){
+  var p={id:lab,model:"veo",mode:"frame_to_video",duration_seconds:8,aspect_ratio:"16:9"};
+  if(imgName)p.input_image=imgName;
+  p.style="photorealistic, natural motion, preserve original image fidelity";
+  if(voiceDesc){
+    p.voice_lock={character_id:(pName||'CHARACTER').toUpperCase().replace(/[^A-Z0-9]+/g,'_')+'_V1',consistency:"STRICT",do_not_drift:true,voice_description:voiceDesc};
+  }
+  p.camera={movement:camLocked?"locked, no movement":"very subtle handheld micro drift, almost imperceptible",stabilization:camLocked?"locked":"natural"};
+  p.performance={mouth_sync:"high precision, realistic phoneme mapping, no over-exaggeration",gesture_level:"minimal, mostly facial-driven performance"};
+  p.continuity_rules=["Do not change wardrobe","Do not change environment","Do not change lighting","Maintain exact character identity across generations","No new objects introduced","No camera cuts"];
+  p.audio={dialogue:dial,delivery_rules:["Start speaking immediately","Natural pauses for storytelling emphasis","Subtle breath and mouth sounds for realism","End with a small pause after speaking"],effects:"none",music:"none"};
+  p.negative_prompt=negP;
+  return JSON.stringify(p,null,2);
+}
+
+// === PARSE SCRIPT ===
+function parseScript(raw){
+  var result=[];
+  var lines=raw.split('\n');
+  for(var i=0;i<lines.length;i++){
+    var line=lines[i].trim();
+    if(!line)continue;
+    var cleaned=line.replace(/^\d+[\.\)\:\-\s]+/,'').trim();
+    if(cleaned){
+      // If user manually toggled, preserve that; otherwise auto-detect {tokens}
+      var wasState=dLines[result.length]?dLines[result.length].isState:false;
+      var hasTokens=/\{[^}]+\}/.test(cleaned);
+      result.push({text:cleaned,isState:wasState||hasTokens});
+    }
+  }
+  return result;
+}
+
+function saveF(){
+  var g=function(id){var el=document.getElementById(id);return el?el.value:''};
+  pName=g('f_pn');
+  voiceDesc=g('f_voice');
+  negP=g('f_neg')||negP;
+  var raw=g('f_script');
+  if(raw!==scriptRaw){
+    scriptRaw=raw;
+    dLines=parseScript(raw);
+  }
+}
+
+// === RENDER SETUP ===
+function renderSetup(){
+  var h='<h1>Veo Prompt Generator</h1><p class="sub">Set up your project, then generate click-to-copy prompts for every line and state.</p>';
+
+  // Section 1: Project + Image
+  h+='<div class="sec"><h2><span class="sn">1</span>Project &amp; Reference Image</h2>';
+  h+='<label>Project Name</label><input type="text" id="f_pn" value="'+esc(pName)+'" placeholder="e.g. Selling Christmas \u2014 State Podcast">';
+  h+='<label>Reference Image</label>';
+  h+='<div class="upload-zone'+(imgData?' has-img':'')+'" onclick="document.getElementById(\'f_img\').click()">';
+  if(imgData){
+    h+='<img src="'+imgData+'" alt="Reference"><p>'+esc(imgName)+' \u2014 click to replace</p>';
+  }else{
+    h+='<p class="up-label">Click to upload reference image</p><p>PNG, JPG, or WEBP</p>';
+  }
+  h+='</div>';
+  h+='<input type="file" id="f_img" accept="image/*" style="display:none" onchange="handleImg(this)">';
+  h+='</div>';
+
+  // Section 2: Voice (single box)
+  h+='<div class="sec"><h2><span class="sn">2</span>Voice Description</h2>';
+  h+='<div class="hint">Describe the voice you want in plain English. Be as specific as you want \u2014 accent, tone, energy, pacing, archetype references, anything.</div>';
+  h+='<textarea id="f_voice" placeholder="e.g. 50-year-old Boston accent, Car Talk energy. Mid-baritone, slightly raspy. Enthusiastic storyteller, leans into punchlines. Moderate-fast pacing with natural comedic rhythm." style="min-height:100px">'+esc(voiceDesc)+'</textarea>';
+  h+='</div>';
+
+  // Section 3: Camera lock toggle
+  h+='<div class="sec"><h2><span class="sn">3</span>Camera</h2>';
+  h+='<div class="toggle-row">';
+  h+='<button class="toggle'+(camLocked?' on':'')+'" onclick="camLocked=!camLocked;renderSetup()">';
+  h+='<div class="toggle-dot"></div></button>';
+  h+='<span class="toggle-label">'+(camLocked?'Camera locked (no movement)':'Camera unlocked (subtle drift)')+'</span>';
+  h+='</div></div>';
+
+  // Section 4: Script (single paste box)
+  h+='<div class="sec"><h2><span class="sn">4</span>Script</h2>';
+  h+='<div class="hint">Paste your full numbered script below. Each numbered line becomes one prompt. After pasting, click the <b>BROAD</b> tag on any line to mark it as state-specific, then use <code>{state}</code>, <code>{city}</code>, etc. tokens in those lines.</div>';
+  h+='<textarea id="f_script" placeholder="1. So I was out on a walk with my wife...\n2. And the couple is freaking out...\n3. I see this happening and I don\'t hesitate..." style="min-height:140px" oninput="previewScript(this.value)">'+esc(scriptRaw)+'</textarea>';
+
+  // Parsed preview
+  if(dLines.length>0){
+    h+='<div style="font-size:12px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">'+dLines.length+' lines detected</div>';
+    h+='<div class="parsed-lines">';
+    for(var i=0;i<dLines.length;i++){
+      h+='<div class="pl">';
+      h+='<span class="pl-n">'+(i+1)+'</span>';
+      h+='<span class="pl-t">'+esc(dLines[i].text)+'</span>';
+      h+='<span class="pl-tag'+(dLines[i].isState?' st':'')+'" onclick="togLine('+i+')">'+(dLines[i].isState?'STATE':'BROAD')+'</span>';
+      h+='</div>';
+    }
+    h+='</div>';
+  }
+  h+='</div>';
+
+  // Section 5: States (always visible, optional)
+  detectKeys();
+  h+='<div class="sec"><h2><span class="sn">5</span>States <span style="font-size:12px;color:#64748b;font-weight:400">(optional)</span></h2>';
+  h+='<div class="hint">Add the states you want to target. If you have STATE lines with {tokens}, swap fields will appear under each state.</div>';
+  for(var i=0;i<dStates.length;i++){
+    h+='<div style="background:#12121f;border:1px solid #2a2a4a;border-radius:8px;padding:12px;margin-bottom:10px">';
+    h+='<div class="sr"><input type="text" id="sn_'+i+'" value="'+esc(dStates[i].name)+'" placeholder="State '+(i+1)+'" style="font-weight:600" onchange="updSN('+i+',this.value)">';
+    h+='<button class="rl" onclick="rmSt('+i+')">&times;</button></div>';
+    for(var j=0;j<swKeys.length;j++){
+      var k=swKeys[j];
+      h+='<div style="display:flex;align-items:center;gap:8px;margin-top:6px">';
+      h+='<span class="sk">{'+esc(k)+'}</span>';
+      h+='<input type="text" id="ss_'+i+'_'+k+'" value="'+esc(dStates[i].swaps[k]||'')+'" placeholder="'+esc(k)+' value" style="margin-bottom:0;flex:1;font-size:13px" onchange="updSS('+i+',\''+k+'\',this.value)">';
+      h+='</div>';
+    }
+    h+='</div>';
+  }
+  h+='<button class="btn2" style="margin-top:10px" onclick="addSt()">+ Add State</button></div>';
+
+  // Negative prompt (collapsed)
+  h+='<div class="sec" style="padding:16px 24px"><details><summary style="font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.06em;cursor:pointer">Negative Prompt (advanced)</summary>';
+  h+='<input type="text" id="f_neg" value="'+esc(negP)+'" style="margin-top:12px;margin-bottom:0">';
+  h+='</details></div>';
+
+  h+='<button class="btngen" onclick="doGen()">Generate Prompts</button>';
+  document.getElementById('app').innerHTML=h;
+}
+
+// === RENDER GENERATOR ===
+function renderGen(){
+  detectKeys();
+  var bLines=[],sLines=[];
+  dLines.forEach(function(l){if(l.isState)sLines.push(l);else bLines.push(l)});
+  var sts=dStatesForGen;
+  var tB=bLines.length,tS=sLines.length*sts.length;
+  if(!gState&&sts.length>0)gState=sts[0].name;
+  var cSt=null;sts.forEach(function(s){if(s.name===gState)cSt=s});
+  var hasSt=sLines.length>0&&sts.length>0;
+
+  var h='<div class="gh"><div><h1>'+esc(pName||'Veo Prompt Generator')+'</h1>';
+  h+='<p style="font-size:13px;color:#94a3b8;margin-top:4px"><span class="accent">';
+  h+=tS>0?(tB+' broad + '+tS+' state = '+(tB+tS)+' total prompts'):(tB+' prompts');
+  h+='</span></p></div><button class="btnback" onclick="backSet()">Edit Setup</button></div>';
+
+  if(hasSt){
+    h+='<div class="tabs"><button class="tab'+(gTab==='broad'?' active':'')+'" onclick="setGT(\'broad\')">Batch 1: Broad ('+tB+')</button>';
+    h+='<button class="tab'+(gTab==='state'?' active':'')+'" onclick="setGT(\'state\')">Batch 2: State ('+sLines.length+' x '+sts.length+')</button></div>';
+  }
+
+  if(gTab==='state'&&hasSt){
+    h+='<div class="pills">';
+    sts.forEach(function(s){h+='<button class="pill'+(gState===s.name?' active':'')+'" onclick="setGS(\''+esc(s.name)+'\')">'+esc(s.name)+'</button>'});
+    h+='</div>';
+  }
+
+  h+='<div class="cards">';
+  if(gTab==='broad'||!hasSt){
+    bLines.forEach(function(bl){
+      var ln=dLines.indexOf(bl)+1;var cid='broad_L'+ln;var ic=cpCard===cid;
+      h+='<div class="card'+(ic?' cp':'')+'" onclick="cpC(\''+cid+'\')">';
+      h+='<div class="ch"><span class="cl">Broad \u2014 L'+ln+'</span><span class="cs">'+(ic?'Copied!':'Click to copy')+'</span></div>';
+      h+='<div class="ct">'+esc(bl.text)+'</div></div>';
+    });
+  }else if(cSt){
+    sLines.forEach(function(sl){
+      var ln=dLines.indexOf(sl)+1;var cid=gState+'_L'+ln;var ic=cpCard===cid;
+      h+='<div class="card'+(ic?' cp':'')+'" onclick="cpC(\''+cid+'\')">';
+      h+='<div class="ch"><span class="cl">'+esc(gState)+' \u2014 L'+ln+'</span><span class="cs">'+(ic?'Copied!':'Click to copy')+'</span></div>';
+      h+='<div class="ct">'+hlS(sl.text,cSt)+'</div></div>';
+    });
+  }
+  h+='</div>';
+
+  if(voiceDesc){
+    h+='<div class="foot"><div class="fl">Voice</div><div class="ft">'+esc(voiceDesc.substring(0,120))+(voiceDesc.length>120?'...':'')+'</div></div>';
+  }
+
+  document.getElementById('app').innerHTML=h;
+}
+
+// === ACTIONS ===
+function handleImg(input){
+  if(input.files&&input.files[0]){
+    var f=input.files[0];imgName=f.name;
+    var reader=new FileReader();
+    reader.onload=function(ev){imgData=ev.target.result;renderSetup()};
+    reader.readAsDataURL(f);
+  }
+}
+function previewScript(val){
+  scriptRaw=val;
+  dLines=parseScript(val);
+  // Re-render just the parsed preview area — but simpler to just re-render
+  // We save cursor position to not disrupt typing
+  var el=document.getElementById('f_script');
+  var pos=el?el.selectionStart:0;
+  renderSetup();
+  var el2=document.getElementById('f_script');
+  if(el2){el2.focus();el2.selectionStart=el2.selectionEnd=pos}
+}
+function togLine(i){dLines[i].isState=!dLines[i].isState;detectKeys();renderSetup()}
+function addSt(){var s={name:'',swaps:{}};swKeys.forEach(function(k){s.swaps[k]=''});dStates.push(s);renderSetup()}
+function rmSt(i){dStates.splice(i,1);renderSetup()}
+function updSN(i,v){dStates[i].name=v}
+function updSS(i,k,v){if(!dStates[i].swaps)dStates[i].swaps={};dStates[i].swaps[k]=v}
+
+function doGen(){
+  saveF();detectKeys();
+  // Save state name values from DOM before generating
+  for(var i=0;i<dStates.length;i++){var el=document.getElementById('sn_'+i);if(el)dStates[i].name=el.value}
+  // Save swap values from DOM
+  for(var i=0;i<dStates.length;i++){if(!dStates[i].swaps)dStates[i].swaps={};for(var j=0;j<swKeys.length;j++){var k=swKeys[j];var el=document.getElementById('ss_'+i+'_'+k);if(el)dStates[i].swaps[k]=el.value}}
+  // Filter out empty states for generation
+  var filled=dStates.filter(function(s){return s.name.trim()!==''});
+  dStatesForGen=filled;
+  view='generator';gTab='broad';cpCard=null;
+  renderGen();window.scrollTo(0,0);
+}
+function backSet(){view='setup';renderSetup();window.scrollTo(0,0)}
+function setGT(t){gTab=t;cpCard=null;renderGen()}
+function setGS(n){gState=n;cpCard=null;renderGen()}
+
+function cpC(cid){
+  var dial,lab;
+  if(cid.indexOf('broad_')===0){
+    var ln=parseInt(cid.split('L')[1]);
+    dial=dLines[ln-1].text;lab=cid;
+  }else{
+    var ui=cid.lastIndexOf('_L');
+    var sn=cid.substring(0,ui);
+    var ln=parseInt(cid.substring(ui+2));
+    var sd=null;dStates.forEach(function(s){if(s.name===sn)sd=s});
+    dial=fillS(dLines[ln-1].text,sd);
+    lab=cid.toLowerCase().replace(/\s+/g,'_');
+  }
+  var json=buildP(dial,lab);
+  navigator.clipboard.writeText(json).then(function(){
+    cpCard=cid;renderGen();
+    setTimeout(function(){cpCard=null;renderGen()},1500);
+  });
+}
+
+// === INIT ===
+renderSetup();
+</script>
+</body>
+</html>
