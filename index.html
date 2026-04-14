@@ -168,25 +168,42 @@ function hlS(t,sd){
   return h;
 }
 
+function balanceBraces(t){
+  var opens=0,str=false,escc=false,q=null;
+  for(var i=0;i<t.length;i++){
+    var c=t.charAt(i);
+    if(escc){escc=false;continue}
+    if(c==='\\'){escc=true;continue}
+    if(str){if(c===q)str=false;continue}
+    if(c==='"'){str=true;q=c;continue}
+    if(c==='{')opens++;
+    else if(c==='}')opens--;
+  }
+  while(opens>0){t+='}';opens--}
+  return t;
+}
 function parseVoice(raw){
   var s=(raw||'').trim();
   if(!s)return null;
   var tryParse=function(t){try{return JSON.parse(t)}catch(e){return null}};
   var normalize=function(t){return t.replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/,(\s*[}\]])/g,'$1')};
   var attempt=normalize(s);
-  var obj=tryParse(attempt);
+  var obj=tryParse(attempt) || tryParse(balanceBraces(attempt));
   if(!obj){
-    // user may have pasted just `"voice_lock": { ... }` without outer braces
-    if(/^"[a-zA-Z_]+"\s*:/.test(attempt))obj=tryParse('{'+attempt.replace(/,\s*$/,'')+'}');
+    // pasted a key:value fragment like `"voice_lock": { ... }` (one or more top-level keys)
+    if(/^"[a-zA-Z_]+"\s*:/.test(attempt)){
+      var wrapped='{'+attempt.replace(/,\s*$/,'')+'}';
+      obj=tryParse(wrapped)||tryParse(balanceBraces(wrapped));
+    }
   }
   if(!obj){
-    // user may have pasted just the inner fields without wrapping
-    if(attempt.indexOf(':')>-1 && attempt.indexOf('{')<0)obj=tryParse('{'+attempt.replace(/,\s*$/,'')+'}');
+    // pasted raw inner fields without wrapping
+    if(attempt.indexOf(':')>-1 && attempt.indexOf('{')<0){
+      var wrapped='{'+attempt.replace(/,\s*$/,'')+'}';
+      obj=tryParse(wrapped)||tryParse(balanceBraces(wrapped));
+    }
   }
-  if(obj && typeof obj==='object'){
-    if(obj.voice_lock && typeof obj.voice_lock==='object')return{type:'json',data:obj.voice_lock};
-    return{type:'json',data:obj};
-  }
+  if(obj && typeof obj==='object')return{type:'json',data:obj};
   return{type:'text',data:s};
 }
 function buildP(dial,lab){
@@ -197,10 +214,21 @@ function buildP(dial,lab){
     if(vp.type==='text'){
       p.voice_lock={character_id:charId,consistency:"STRICT",do_not_drift:true,voice_description:vp.data};
     }else{
-      var vl={character_id:charId};
-      for(var key in vp.data)vl[key]=vp.data[key];
-      if(vl.do_not_drift===undefined)vl.do_not_drift=true;
-      p.voice_lock=vl;
+      var data=vp.data;
+      if(data.voice_lock && typeof data.voice_lock==='object'){
+        var vl={character_id:charId};
+        for(var kk in data.voice_lock)vl[kk]=data.voice_lock[kk];
+        if(vl.do_not_drift===undefined)vl.do_not_drift=true;
+        p.voice_lock=vl;
+        // Merge any OTHER top-level keys pasted alongside voice_lock
+        for(var kk in data){if(kk!=='voice_lock')p[kk]=data[kk]}
+      }else{
+        // No voice_lock wrapper — treat entire object as voice_lock body
+        var vl={character_id:charId};
+        for(var kk in data)vl[kk]=data[kk];
+        if(vl.do_not_drift===undefined)vl.do_not_drift=true;
+        p.voice_lock=vl;
+      }
     }
   }
   p.camera={movement:camLocked?"locked, no movement":"very subtle handheld micro drift, almost imperceptible",stabilization:camLocked?"locked":"natural"};
