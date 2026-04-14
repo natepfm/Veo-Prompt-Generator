@@ -15,8 +15,9 @@ h2{font-size:16px;font-weight:700;color:#f8fafc;margin-bottom:12px}
 .sn{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:#f97316;color:#fff;font-size:12px;font-weight:700;margin-right:8px}
 .sec{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px;padding:24px;margin-bottom:20px}
 label{display:block;font-size:12px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
-input[type="text"],textarea{width:100%;padding:10px 14px;border-radius:8px;border:1px solid #2a2a4a;background:#12121f;color:#e2e8f0;font-size:14px;font-family:inherit;transition:border-color .15s;margin-bottom:16px}
-input[type="text"]:focus,textarea:focus{outline:none;border-color:#f97316}
+input[type="text"],textarea,select{width:100%;padding:10px 14px;border-radius:8px;border:1px solid #2a2a4a;background:#12121f;color:#e2e8f0;font-size:14px;font-family:inherit;transition:border-color .15s;margin-bottom:16px}
+input[type="text"]:focus,textarea:focus,select:focus{outline:none;border-color:#f97316}
+select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='%2394a3b8' d='M6 8L0 0h12z'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer}
 textarea{resize:vertical;min-height:80px;line-height:1.5}
 .row{display:flex;gap:12px}.row>*{flex:1}
 .hint{padding:10px 14px;background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.2);border-radius:8px;font-size:12px;color:#fdba74;margin-bottom:16px;line-height:1.5}
@@ -24,14 +25,6 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 .btn2:hover{border-color:#f97316;color:#e2e8f0}
 .btngen{width:100%;padding:14px;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;background:linear-gradient(135deg,#f97316,#fb923c);color:#fff;border:none;border-radius:10px;cursor:pointer;transition:all .2s}
 .btngen:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(249,115,22,.3)}
-
-/* Upload zone */
-.upload-zone{border:2px dashed #2a2a4a;border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:all .15s;margin-bottom:16px}
-.upload-zone:hover{border-color:#f97316}
-.upload-zone.has-img{border-style:solid;border-color:#22c55e;padding:12px}
-.upload-zone img{max-width:100%;max-height:200px;border-radius:6px}
-.upload-zone p{font-size:13px;color:#64748b;margin-top:8px}
-.upload-zone .up-label{font-size:14px;color:#94a3b8;font-weight:600}
 
 /* Toggle */
 .toggle-row{display:flex;align-items:center;gap:12px;margin-bottom:16px}
@@ -43,8 +36,8 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 
 /* States */
 .sr{display:flex;gap:10px;align-items:center;margin-bottom:8px}
-.sr input{margin-bottom:0;flex:1}
-.sk{display:inline-block;padding:3px 8px;border-radius:4px;background:rgba(248,113,113,.1);color:#f87171;font-size:11px;font-weight:600;margin-right:6px}
+.sr select{margin-bottom:0;flex:1}
+.sk{display:inline-block;padding:3px 8px;border-radius:4px;background:rgba(248,113,113,.1);color:#f87171;font-size:11px;font-weight:600;margin-right:6px;font-family:monospace}
 .rl{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid #2a2a4a;background:transparent;color:#64748b;cursor:pointer;font-size:16px;flex-shrink:0}
 .rl:hover{border-color:#f87171;color:#f87171}
 
@@ -72,7 +65,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 .btnback{background:#1a1a2e;color:#94a3b8;border:1px solid #2a2a4a;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600}
 .btnback:hover{border-color:#f97316;color:#e2e8f0}
 
-/* Line chips in the parsed preview */
+/* Parsed lines */
 .parsed-lines{display:flex;flex-direction:column;gap:6px;margin-top:12px}
 .pl{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;background:#12121f;border-radius:6px;border:1px solid #2a2a4a;font-size:13px;line-height:1.4}
 .pl-n{min-width:24px;height:24px;display:flex;align-items:center;justify-content:center;background:#2a2a4a;border-radius:5px;font-size:10px;font-weight:700;color:#94a3b8;flex-shrink:0}
@@ -84,12 +77,14 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 <body>
 <div class="container" id="app"></div>
 <script>
+// === US STATES (+ DC) ===
+var US_STATES=['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District of Columbia','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
+
 // === STATE ===
 var view='setup';
 var pName='';
-var imgData=null; // base64 data URL
-var imgName='';
 var voiceDesc='';
+var charDesc='';
 var camLocked=true;
 var negP='identity drift, wardrobe change, morphing faces, extra limbs, background shift, blurry, plastic skin, text on screen';
 var scriptRaw='';
@@ -99,23 +94,129 @@ var swKeys=[];
 var dStatesForGen=[];
 var gTab='broad',gState='',cpCard=null;
 
-function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/\x3c/g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function detectKeys(){var k={};dLines.forEach(function(l){if(l.isState){var m=l.text.match(/\{([^}]+)\}/g);if(m)m.forEach(function(x){k[x.slice(1,-1)]=1})}});swKeys=Object.keys(k)}
-function fillS(t,sd){var r=t;swKeys.forEach(function(k){r=r.replace(new RegExp('\\{'+k+'\\}','g'),sd.swaps[k]||'{'+k+'}')});return r}
-function hlS(t,sd){var h=esc(t);swKeys.forEach(function(k){var v=sd.swaps[k]||'{'+k+'}';h=h.replace(new RegExp('\\{'+k+'\\}','g'),'<span class="swap">'+esc(v)+'</span>')});return h}
+// Token patterns: {x} | [x] | **x**
+var TOKEN_RE=/\{[^}]+\}|\[[^\]]+\]|\*\*[^*]+\*\*/;
 
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/\x3c/g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function escRe(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
+
+function normKey(s){
+  var prev=null,cur=s.trim();
+  while(cur!==prev){
+    prev=cur;
+    cur=cur.replace(/^\*\*(.+)\*\*$/,'$1').replace(/^\{(.+)\}$/,'$1').replace(/^\[(.+)\]$/,'$1').trim();
+  }
+  return cur;
+}
+function detectKeys(){
+  var k={};
+  dLines.forEach(function(l){
+    if(!l.isState)return;
+    var m;
+    m=l.text.match(/\{([^}]+)\}/g);if(m)m.forEach(function(x){var n=normKey(x);if(n)k[n]=1});
+    m=l.text.match(/\[([^\]]+)\]/g);if(m)m.forEach(function(x){var n=normKey(x);if(n)k[n]=1});
+    m=l.text.match(/\*\*([^*]+)\*\*/g);if(m)m.forEach(function(x){var n=normKey(x);if(n)k[n]=1});
+  });
+  swKeys=Object.keys(k);
+}
+
+function resolveSwap(k,sd){
+  if(!sd)return'';
+  if(k.toLowerCase()==='state')return sd.name||'';
+  return sd.swaps[k]||'';
+}
+
+function fillS(t,sd){
+  var r=t;
+  if(!sd)return r;
+  swKeys.forEach(function(k){
+    var v=resolveSwap(k,sd);
+    var ek=escRe(k);
+    // Combined wrappers first so the outer ** handles the full chunk
+    r=r.replace(new RegExp('\\*\\*\\{'+ek+'\\}\\*\\*','g'),v||'**{'+k+'}**');
+    r=r.replace(new RegExp('\\*\\*\\['+ek+'\\]\\*\\*','g'),v||'**['+k+']**');
+    r=r.replace(new RegExp('\\*\\*'+ek+'\\*\\*','g'),v||'**'+k+'**');
+    r=r.replace(new RegExp('\\{'+ek+'\\}','g'),v||'{'+k+'}');
+    r=r.replace(new RegExp('\\['+ek+'\\]','g'),v||'['+k+']');
+  });
+  return r;
+}
+
+function stripTokens(t){
+  return(t||'').replace(/\*\*([^*]+)\*\*/g,'$1').replace(/\[([^\]]+)\]/g,'$1').replace(/\{([^}]+)\}/g,'$1');
+}
+function hlTokens(t){
+  var h=esc(t);
+  h=h.replace(/\*\*([^*]+)\*\*/g,'<span class="swap">$1</span>');
+  h=h.replace(/\[([^\]]+)\]/g,'<span class="swap">$1</span>');
+  h=h.replace(/\{([^}]+)\}/g,'<span class="swap">$1</span>');
+  return h;
+}
+function hlS(t,sd){
+  var h=esc(t);
+  if(!sd)return h;
+  swKeys.forEach(function(k){
+    var v=resolveSwap(k,sd);
+    var ek=escRe(k);
+    var wrap=function(m){return'<span class="swap">'+esc(v||m)+'</span>'};
+    h=h.replace(new RegExp('\\*\\*\\{'+ek+'\\}\\*\\*','g'),wrap('**{'+k+'}**'));
+    h=h.replace(new RegExp('\\*\\*\\['+ek+'\\]\\*\\*','g'),wrap('**['+k+']**'));
+    h=h.replace(new RegExp('\\*\\*'+ek+'\\*\\*','g'),wrap('**'+k+'**'));
+    h=h.replace(new RegExp('\\{'+ek+'\\}','g'),wrap('{'+k+'}'));
+    h=h.replace(new RegExp('\\['+ek+'\\]','g'),wrap('['+k+']'));
+  });
+  return h;
+}
+
+function parseVoice(raw){
+  var s=(raw||'').trim();
+  if(!s)return null;
+  var tryParse=function(t){try{return JSON.parse(t)}catch(e){return null}};
+  var normalize=function(t){return t.replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/,(\s*[}\]])/g,'$1')};
+  var attempt=normalize(s);
+  var obj=tryParse(attempt);
+  if(!obj){
+    // user may have pasted just `"voice_lock": { ... }` without outer braces
+    if(/^"[a-zA-Z_]+"\s*:/.test(attempt))obj=tryParse('{'+attempt.replace(/,\s*$/,'')+'}');
+  }
+  if(!obj){
+    // user may have pasted just the inner fields without wrapping
+    if(attempt.indexOf(':')>-1 && attempt.indexOf('{')<0)obj=tryParse('{'+attempt.replace(/,\s*$/,'')+'}');
+  }
+  if(obj && typeof obj==='object'){
+    if(obj.voice_lock && typeof obj.voice_lock==='object')return{type:'json',data:obj.voice_lock};
+    return{type:'json',data:obj};
+  }
+  return{type:'text',data:s};
+}
 function buildP(dial,lab){
-  var p={id:lab,model:"veo",mode:"frame_to_video",duration_seconds:8,aspect_ratio:"16:9"};
-  if(imgName)p.input_image=imgName;
-  p.style="photorealistic, natural motion, preserve original image fidelity";
-  if(voiceDesc){
-    p.voice_lock={character_id:(pName||'CHARACTER').toUpperCase().replace(/[^A-Z0-9]+/g,'_')+'_V1',consistency:"STRICT",do_not_drift:true,voice_description:voiceDesc};
+  var p={id:lab,model:"veo",mode:"frame_to_video",duration_seconds:8,aspect_ratio:"16:9",style:"photorealistic, natural motion, preserve original image fidelity"};
+  var vp=parseVoice(voiceDesc);
+  if(vp){
+    var charId=(pName||'CHARACTER').toUpperCase().replace(/[^A-Z0-9]+/g,'_')+'_V1';
+    if(vp.type==='text'){
+      p.voice_lock={character_id:charId,consistency:"STRICT",do_not_drift:true,voice_description:vp.data};
+    }else{
+      var vl={character_id:charId};
+      for(var key in vp.data)vl[key]=vp.data[key];
+      if(vl.do_not_drift===undefined)vl.do_not_drift=true;
+      p.voice_lock=vl;
+    }
   }
   p.camera={movement:camLocked?"locked, no movement":"very subtle handheld micro drift, almost imperceptible",stabilization:camLocked?"locked":"natural"};
   p.performance={mouth_sync:"high precision, realistic phoneme mapping, no over-exaggeration",gesture_level:"minimal, mostly facial-driven performance"};
   p.continuity_rules=["Do not change wardrobe","Do not change environment","Do not change lighting","Maintain exact character identity across generations","No new objects introduced","No camera cuts"];
   p.audio={dialogue:dial,delivery_rules:["Start speaking immediately","Natural pauses for storytelling emphasis","Subtle breath and mouth sounds for realism","End with a small pause after speaking"],effects:"none",music:"none"};
   p.negative_prompt=negP;
+  // Merge in additional character details (plain text or JSON)
+  var cp=parseVoice(charDesc);
+  if(cp){
+    if(cp.type==='text'){
+      p.character_notes=cp.data;
+    }else{
+      for(var ck in cp.data)p[ck]=cp.data[ck];
+    }
+  }
   return JSON.stringify(p,null,2);
 }
 
@@ -128,9 +229,8 @@ function parseScript(raw){
     if(!line)continue;
     var cleaned=line.replace(/^\d+[\.\)\:\-\s]+/,'').trim();
     if(cleaned){
-      // If user manually toggled, preserve that; otherwise auto-detect {tokens}
       var wasState=dLines[result.length]?dLines[result.length].isState:false;
-      var hasTokens=/\{[^}]+\}/.test(cleaned);
+      var hasTokens=TOKEN_RE.test(cleaned);
       result.push({text:cleaned,isState:wasState||hasTokens});
     }
   }
@@ -141,86 +241,80 @@ function saveF(){
   var g=function(id){var el=document.getElementById(id);return el?el.value:''};
   pName=g('f_pn');
   voiceDesc=g('f_voice');
+  charDesc=g('f_char');
   negP=g('f_neg')||negP;
   var raw=g('f_script');
-  if(raw!==scriptRaw){
-    scriptRaw=raw;
-    dLines=parseScript(raw);
-  }
+  if(raw!==scriptRaw){scriptRaw=raw;dLines=parseScript(raw)}
 }
 
 // === RENDER SETUP ===
 function renderSetup(){
   var h='<h1>Veo Prompt Generator</h1><p class="sub">Set up your project, then generate click-to-copy prompts for every line and state.</p>';
 
-  // Section 1: Project + Image
-  h+='<div class="sec"><h2><span class="sn">1</span>Project &amp; Reference Image</h2>';
-  h+='<label>Project Name</label><input type="text" id="f_pn" value="'+esc(pName)+'" placeholder="e.g. Selling Christmas \u2014 State Podcast">';
-  h+='<label>Reference Image</label>';
-  h+='<div class="upload-zone'+(imgData?' has-img':'')+'" onclick="document.getElementById(\'f_img\').click()">';
-  if(imgData){
-    h+='<img src="'+imgData+'" alt="Reference"><p>'+esc(imgName)+' \u2014 click to replace</p>';
-  }else{
-    h+='<p class="up-label">Click to upload reference image</p><p>PNG, JPG, or WEBP</p>';
-  }
-  h+='</div>';
-  h+='<input type="file" id="f_img" accept="image/*" style="display:none" onchange="handleImg(this)">';
+  // Section 1: Project
+  h+='<div class="sec"><h2><span class="sn">1</span>Project</h2>';
+  h+='<label>Project Name</label><input type="text" id="f_pn" value="'+esc(pName)+'" placeholder="e.g. Selling Christmas \u2014 State Podcast" style="margin-bottom:0">';
   h+='</div>';
 
-  // Section 2: Voice (single box)
+  // Section 2: Voice
   h+='<div class="sec"><h2><span class="sn">2</span>Voice Description</h2>';
-  h+='<div class="hint">Describe the voice you want in plain English. Be as specific as you want \u2014 accent, tone, energy, pacing, archetype references, anything.</div>';
-  h+='<textarea id="f_voice" placeholder="e.g. 50-year-old Boston accent, Car Talk energy. Mid-baritone, slightly raspy. Enthusiastic storyteller, leans into punchlines. Moderate-fast pacing with natural comedic rhythm." style="min-height:100px">'+esc(voiceDesc)+'</textarea>';
+  h+='<div class="hint">Describe the voice in plain English <b>or</b> paste a <code>voice_lock</code> JSON block from an existing prompt. Both are supported.</div>';
+  h+='<textarea id="f_voice" placeholder="Plain English: 50-year-old Boston accent, Car Talk energy, mid-baritone, slightly raspy...&#10;&#10;OR paste a voice_lock JSON block:&#10;&quot;voice_lock&quot;: {&#10;  &quot;gender&quot;: &quot;male&quot;,&#10;  &quot;age&quot;: &quot;50s-60s&quot;,&#10;  &quot;tone&quot;: &quot;warm, confident...&quot;,&#10;  ...&#10;}" style="min-height:140px;margin-bottom:16px;font-family:inherit">'+esc(voiceDesc)+'</textarea>';
+  h+='<label>Additional Character Details <span style="text-transform:none;color:#64748b;font-weight:400">(optional)</span></label>';
+  h+='<div class="hint">Anything else you want in the prompt \u2014 performance, wardrobe, mannerisms, etc. Plain text adds a <code>character_notes</code> field. Pasted JSON merges top-level keys (e.g. a <code>performance</code> block overrides the default).</div>';
+  h+='<textarea id="f_char" placeholder="Plain text: wears a gray flannel, leans against the driver-side door, hands relaxed...&#10;&#10;OR JSON block:&#10;&quot;performance&quot;: {&#10;  &quot;mouth_sync&quot;: &quot;high precision, realistic phoneme mapping&quot;,&#10;  &quot;gesture_level&quot;: &quot;minimal, mostly facial-driven performance&quot;&#10;}" style="min-height:120px;margin-bottom:0;font-family:inherit">'+esc(charDesc)+'</textarea>';
   h+='</div>';
 
-  // Section 3: Camera lock toggle
+  // Section 3: Camera
   h+='<div class="sec"><h2><span class="sn">3</span>Camera</h2>';
-  h+='<div class="toggle-row">';
-  h+='<button class="toggle'+(camLocked?' on':'')+'" onclick="camLocked=!camLocked;renderSetup()">';
-  h+='<div class="toggle-dot"></div></button>';
+  h+='<div class="toggle-row" style="margin-bottom:0">';
+  h+='<button class="toggle'+(camLocked?' on':'')+'" onclick="camLocked=!camLocked;renderSetup()"><div class="toggle-dot"></div></button>';
   h+='<span class="toggle-label">'+(camLocked?'Camera locked (no movement)':'Camera unlocked (subtle drift)')+'</span>';
   h+='</div></div>';
 
-  // Section 4: Script (single paste box)
+  // Section 4: Script
   h+='<div class="sec"><h2><span class="sn">4</span>Script</h2>';
-  h+='<div class="hint">Paste your full numbered script below. Each numbered line becomes one prompt. After pasting, click the <b>BROAD</b> tag on any line to mark it as state-specific, then use <code>{state}</code>, <code>{city}</code>, etc. tokens in those lines.</div>';
+  h+='<div class="hint">Paste your full numbered script below. Each numbered line becomes one prompt. Lines with <code>{token}</code>, <code>[token]</code>, or <code>**token**</code> are auto-tagged STATE \u2014 these only get swapped if you fill in Section 5. If your script already has the state baked in, leave Section 5 empty and every line generates as-is.</div>';
   h+='<textarea id="f_script" placeholder="1. So I was out on a walk with my wife...\n2. And the couple is freaking out...\n3. I see this happening and I don\'t hesitate..." style="min-height:140px" oninput="previewScript(this.value)">'+esc(scriptRaw)+'</textarea>';
 
-  // Parsed preview
   if(dLines.length>0){
     h+='<div style="font-size:12px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">'+dLines.length+' lines detected</div>';
     h+='<div class="parsed-lines">';
     for(var i=0;i<dLines.length;i++){
-      h+='<div class="pl">';
-      h+='<span class="pl-n">'+(i+1)+'</span>';
+      h+='<div class="pl"><span class="pl-n">'+(i+1)+'</span>';
       h+='<span class="pl-t">'+esc(dLines[i].text)+'</span>';
-      h+='<span class="pl-tag'+(dLines[i].isState?' st':'')+'" onclick="togLine('+i+')">'+(dLines[i].isState?'STATE':'BROAD')+'</span>';
-      h+='</div>';
+      h+='<span class="pl-tag'+(dLines[i].isState?' st':'')+'" onclick="togLine('+i+')">'+(dLines[i].isState?'STATE':'BROAD')+'</span></div>';
     }
     h+='</div>';
   }
   h+='</div>';
 
-  // Section 5: States (always visible, optional)
+  // Section 5: States
   detectKeys();
   h+='<div class="sec"><h2><span class="sn">5</span>States <span style="font-size:12px;color:#64748b;font-weight:400">(optional)</span></h2>';
-  h+='<div class="hint">Add the states you want to target. If you have STATE lines with {tokens}, swap fields will appear under each state.</div>';
+  h+='<div class="hint">Only fill this out if you\u2019re running multi-state variations and your script has <code>{token}</code> swaps. Leave it empty if the state is already written into the script.</div>';
   for(var i=0;i<dStates.length;i++){
     h+='<div style="background:#12121f;border:1px solid #2a2a4a;border-radius:8px;padding:12px;margin-bottom:10px">';
-    h+='<div class="sr"><input type="text" id="sn_'+i+'" value="'+esc(dStates[i].name)+'" placeholder="State '+(i+1)+'" style="font-weight:600" onchange="updSN('+i+',this.value)">';
-    h+='<button class="rl" onclick="rmSt('+i+')">&times;</button></div>';
+    h+='<div class="sr"><select id="sn_'+i+'" onchange="updSN('+i+',this.value)">';
+    h+='<option value="">\u2014 Select state '+(i+1)+' \u2014</option>';
+    for(var s=0;s<US_STATES.length;s++){
+      var stName=US_STATES[s];
+      h+='<option value="'+esc(stName)+'"'+(dStates[i].name===stName?' selected':'')+'>'+esc(stName)+'</option>';
+    }
+    h+='</select><button class="rl" onclick="rmSt('+i+')">&times;</button></div>';
     for(var j=0;j<swKeys.length;j++){
       var k=swKeys[j];
+      if(k.toLowerCase()==='state')continue; // auto-filled from the dropdown above
       h+='<div style="display:flex;align-items:center;gap:8px;margin-top:6px">';
-      h+='<span class="sk">{'+esc(k)+'}</span>';
-      h+='<input type="text" id="ss_'+i+'_'+k+'" value="'+esc(dStates[i].swaps[k]||'')+'" placeholder="'+esc(k)+' value" style="margin-bottom:0;flex:1;font-size:13px" onchange="updSS('+i+',\''+k+'\',this.value)">';
+      h+='<span class="sk">'+esc(k)+'</span>';
+      h+='<input type="text" id="ss_'+i+'_'+j+'" value="'+esc(dStates[i].swaps[k]||'')+'" placeholder="'+esc(k)+' value" style="margin-bottom:0;flex:1;font-size:13px" onchange="updSS('+i+',\''+esc(k).replace(/\\/g,'\\\\').replace(/\'/g,"\\'")+'\',this.value)">';
       h+='</div>';
     }
     h+='</div>';
   }
   h+='<button class="btn2" style="margin-top:10px" onclick="addSt()">+ Add State</button></div>';
 
-  // Negative prompt (collapsed)
+  // Negative prompt
   h+='<div class="sec" style="padding:16px 24px"><details><summary style="font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.06em;cursor:pointer">Negative Prompt (advanced)</summary>';
   h+='<input type="text" id="f_neg" value="'+esc(negP)+'" style="margin-top:12px;margin-bottom:0">';
   h+='</details></div>';
@@ -233,8 +327,13 @@ function renderSetup(){
 function renderGen(){
   detectKeys();
   var bLines=[],sLines=[];
-  dLines.forEach(function(l){if(l.isState)sLines.push(l);else bLines.push(l)});
   var sts=dStatesForGen;
+  if(sts.length===0){
+    // No states configured — everything generates as a single batch.
+    bLines=dLines.slice();
+  }else{
+    dLines.forEach(function(l){if(l.isState)sLines.push(l);else bLines.push(l)});
+  }
   var tB=bLines.length,tS=sLines.length*sts.length;
   if(!gState&&sts.length>0)gState=sts[0].name;
   var cSt=null;sts.forEach(function(s){if(s.name===gState)cSt=s});
@@ -259,15 +358,20 @@ function renderGen(){
   h+='<div class="cards">';
   if(gTab==='broad'||!hasSt){
     bLines.forEach(function(bl){
-      var ln=dLines.indexOf(bl)+1;var cid='broad_L'+ln;var ic=cpCard===cid;
+      var ln=dLines.indexOf(bl)+1;
+      var isSt=bl.isState;
+      var cid=(isSt?'state':'broad')+'_L'+ln;
+      var ic=cpCard===cid;
+      var lblStyle=isSt?' style="color:#f87171"':'';
+      var lblTxt=(isSt?'State':'Broad')+' \u2014 L'+ln;
       h+='<div class="card'+(ic?' cp':'')+'" onclick="cpC(\''+cid+'\')">';
-      h+='<div class="ch"><span class="cl">Broad \u2014 L'+ln+'</span><span class="cs">'+(ic?'Copied!':'Click to copy')+'</span></div>';
-      h+='<div class="ct">'+esc(bl.text)+'</div></div>';
+      h+='<div class="ch"><span class="cl"'+lblStyle+'>'+lblTxt+'</span><span class="cs">'+(ic?'Copied!':'Click to copy')+'</span></div>';
+      h+='<div class="ct">'+(isSt?hlTokens(bl.text):esc(bl.text))+'</div></div>';
     });
   }else if(cSt){
     sLines.forEach(function(sl){
       var ln=dLines.indexOf(sl)+1;var cid=gState+'_L'+ln;var ic=cpCard===cid;
-      h+='<div class="card'+(ic?' cp':'')+'" onclick="cpC(\''+cid+'\')">';
+      h+='<div class="card'+(ic?' cp':'')+'" onclick="cpC(\''+esc(cid).replace(/\\/g,'\\\\').replace(/\'/g,"\\'")+'\')">';
       h+='<div class="ch"><span class="cl">'+esc(gState)+' \u2014 L'+ln+'</span><span class="cs">'+(ic?'Copied!':'Click to copy')+'</span></div>';
       h+='<div class="ct">'+hlS(sl.text,cSt)+'</div></div>';
     });
@@ -282,19 +386,9 @@ function renderGen(){
 }
 
 // === ACTIONS ===
-function handleImg(input){
-  if(input.files&&input.files[0]){
-    var f=input.files[0];imgName=f.name;
-    var reader=new FileReader();
-    reader.onload=function(ev){imgData=ev.target.result;renderSetup()};
-    reader.readAsDataURL(f);
-  }
-}
 function previewScript(val){
   scriptRaw=val;
   dLines=parseScript(val);
-  // Re-render just the parsed preview area — but simpler to just re-render
-  // We save cursor position to not disrupt typing
   var el=document.getElementById('f_script');
   var pos=el?el.selectionStart:0;
   renderSetup();
@@ -309,14 +403,17 @@ function updSS(i,k,v){if(!dStates[i].swaps)dStates[i].swaps={};dStates[i].swaps[
 
 function doGen(){
   saveF();detectKeys();
-  // Save state name values from DOM before generating
   for(var i=0;i<dStates.length;i++){var el=document.getElementById('sn_'+i);if(el)dStates[i].name=el.value}
-  // Save swap values from DOM
-  for(var i=0;i<dStates.length;i++){if(!dStates[i].swaps)dStates[i].swaps={};for(var j=0;j<swKeys.length;j++){var k=swKeys[j];var el=document.getElementById('ss_'+i+'_'+k);if(el)dStates[i].swaps[k]=el.value}}
-  // Filter out empty states for generation
+  for(var i=0;i<dStates.length;i++){
+    if(!dStates[i].swaps)dStates[i].swaps={};
+    for(var j=0;j<swKeys.length;j++){
+      var k=swKeys[j];var el=document.getElementById('ss_'+i+'_'+j);
+      if(el)dStates[i].swaps[k]=el.value;
+    }
+  }
   var filled=dStates.filter(function(s){return s.name.trim()!==''});
   dStatesForGen=filled;
-  view='generator';gTab='broad';cpCard=null;
+  view='generator';gTab='broad';gState='';cpCard=null;
   renderGen();window.scrollTo(0,0);
 }
 function backSet(){view='setup';renderSetup();window.scrollTo(0,0)}
@@ -325,9 +422,9 @@ function setGS(n){gState=n;cpCard=null;renderGen()}
 
 function cpC(cid){
   var dial,lab;
-  if(cid.indexOf('broad_')===0){
+  if(cid.indexOf('broad_')===0||cid.indexOf('state_')===0){
     var ln=parseInt(cid.split('L')[1]);
-    dial=dLines[ln-1].text;lab=cid;
+    dial=stripTokens(dLines[ln-1].text);lab=cid;
   }else{
     var ui=cid.lastIndexOf('_L');
     var sn=cid.substring(0,ui);
@@ -343,7 +440,6 @@ function cpC(cid){
   });
 }
 
-// === INIT ===
 renderSetup();
 </script>
 </body>
