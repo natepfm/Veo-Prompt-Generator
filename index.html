@@ -253,6 +253,13 @@ function parseAttrs(){
   catch(e){return{ok:false,err:e.message}}
 }
 function escapeDial(d){return d.replace(/\\/g,'\\\\').replace(/"/g,'\\"')}
+// Find the first object in the JSON tree that already has a `dialogue` key
+function findDialogueHost(o){
+  if(!o||typeof o!=='object'||Array.isArray(o))return null;
+  if('dialogue' in o)return o;
+  for(var k in o){if(Object.prototype.hasOwnProperty.call(o,k)){var f=findDialogueHost(o[k]);if(f)return f}}
+  return null;
+}
 function buildP(dial){
   var raw=(jsonAttrs||'').trim();
   if(!raw)return'character says ("'+escapeDial(dial)+'")';
@@ -260,11 +267,22 @@ function buildP(dial){
     if(raw.indexOf('{dialogue}')!==-1)return raw.replace(/\{dialogue\}/g,dial);
     return raw+'\n\ncharacter says ("'+escapeDial(dial)+'")';
   }
-  var p=parseAttrs();
-  if(!p.ok)return'character says ("'+escapeDial(dial)+'")';
-  var out=JSON.parse(JSON.stringify(p.obj));
-  out.character_says=dial;
-  return JSON.stringify(out,null,2);
+  // JSON mode
+  var hasPlaceholder=raw.indexOf('{dialogue}')!==-1;
+  var source=raw;
+  if(hasPlaceholder){
+    var safeInner=JSON.stringify(dial).slice(1,-1); // JSON-escaped, no outer quotes
+    source=raw.replace(/\{dialogue\}/g,safeInner);
+  }
+  var p;try{p=JSON.parse(source)}catch(e){return'character says ("'+escapeDial(dial)+'")'}
+  if(!p||typeof p!=='object'||Array.isArray(p))return'character says ("'+escapeDial(dial)+'")';
+  if(!hasPlaceholder){
+    var host=findDialogueHost(p);
+    if(host){host.dialogue=dial}
+    else if(p.audio&&typeof p.audio==='object'&&!Array.isArray(p.audio)){p.audio.dialogue=dial}
+    else{p.dialogue=dial}
+  }
+  return JSON.stringify(p,null,2);
 }
 
 // === PARSE SCRIPT ===
@@ -400,7 +418,7 @@ function renderSetup(){
   h+='<div class="sec"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap"><h2 style="margin-bottom:0"><span class="sn">2</span>Paste Attributes</h2>';
   h+='<div class="mode-toggle"><button class="mtab'+(isJson?' active':'')+'" onclick="setMode(\'json\')">JSON</button><button class="mtab'+(!isJson?' active':'')+'" onclick="setMode(\'text\')">Text</button></div></div>';
   if(isJson){
-    h+='<div class="hint">Paste any JSON attributes you want baked into every prompt \u2014 voice, camera, style, continuity rules, anything. Dialogue is injected as <code>character_says</code>. Empty = output is just <code>character says ("dialogue")</code>.</div>';
+    h+='<div class="hint">Paste any JSON attributes you want baked into every prompt. Dialogue fills the first <code>dialogue</code> key found in your JSON (e.g. <code>audio.dialogue</code>). If none exists, one gets added. Use <code>{dialogue}</code> anywhere to pin the exact location. Empty = output is just <code>character says ("dialogue")</code>.</div>';
     h+='<textarea id="f_json" placeholder=\'{\\n  "style": "photorealistic, natural motion",\\n  "camera": { "movement": "locked" },\\n  "voice_lock": { "voice_description": "50-year-old Boston accent" }\\n}\' style="min-height:140px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px" oninput="onAttrs(this.value)">'+esc(jsonAttrs)+'</textarea>';
     if(jsonAttrs.trim()&&!attrCheck.ok){
       h+='<div style="padding:10px 14px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.3);border-radius:8px;font-size:12px;color:#f87171;margin-top:-8px">Invalid JSON: '+esc(attrCheck.err||'')+'</div>';
