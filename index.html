@@ -212,9 +212,38 @@ function fmtTime(iso){if(!iso||iso===true)return'';var d=new Date(iso);var h=d.g
 function fmtStamp(iso){if(!iso||iso===true)return'';var d=new Date(iso),t=new Date();var same=d.toDateString()===t.toDateString();if(same)return'Copied '+fmtTime(iso);var pad=function(n){return(n<10?'0':'')+n};return'Copied '+(d.getMonth()+1)+'/'+d.getDate()+' '+fmtTime(iso)}
 
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/\x3c/g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function detectKeys(){var k={};dLines.forEach(function(l){if(l.isState){var m=l.text.match(/\{([^}]+)\}/g);if(m)m.forEach(function(x){k[x.slice(1,-1)]=1})}});swKeys=Object.keys(k)}
-function fillS(t,sd){var r=t;swKeys.forEach(function(k){r=r.replace(new RegExp('\\{'+k+'\\}','g'),sd.swaps[k]||'{'+k+'}')});return r}
-function hlS(t,sd){var h=esc(t);swKeys.forEach(function(k){var v=sd.swaps[k]||'{'+k+'}';h=h.replace(new RegExp('\\{'+k+'\\}','g'),'<span class="swap">'+esc(v)+'</span>')});return h}
+function escRe(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
+// Swap tokens: {anything} or [UPPERCASE_ONLY]
+function detectKeys(){
+  var k={};
+  dLines.forEach(function(l){
+    if(!l.isState)return;
+    var m1=l.text.match(/\{([^}]+)\}/g);if(m1)m1.forEach(function(x){k[x.slice(1,-1)]=1});
+    var m2=l.text.match(/\[([A-Z][A-Z0-9_]*)\]/g);if(m2)m2.forEach(function(x){k[x.slice(1,-1)]=1});
+  });
+  swKeys=Object.keys(k);
+}
+function swapVal(k,sd){
+  var v=sd.swaps&&sd.swaps[k];
+  if(!v&&k.toLowerCase()==='state')v=sd.name;
+  return v||'';
+}
+function fillS(t,sd){
+  var r=t;
+  swKeys.forEach(function(k){
+    var v=swapVal(k,sd);if(!v)return;
+    r=r.replace(new RegExp('\\{'+escRe(k)+'\\}|\\['+escRe(k)+'\\]','g'),v);
+  });
+  return r;
+}
+function hlS(t,sd){
+  var h=esc(t);
+  swKeys.forEach(function(k){
+    var v=swapVal(k,sd)||'{'+k+'}';
+    h=h.replace(new RegExp('\\{'+escRe(k)+'\\}|\\['+escRe(k)+'\\]','g'),'<span class="swap">'+esc(v)+'</span>');
+  });
+  return h;
+}
 
 function parseAttrs(){
   var raw=(jsonAttrs||'').trim();
@@ -247,9 +276,9 @@ function parseScript(raw){
     if(!line)continue;
     var cleaned=line.replace(/^\d+[\.\)\:\-\s]+/,'').trim();
     if(cleaned){
-      // If user manually toggled, preserve that; otherwise auto-detect {tokens}
+      // If user manually toggled, preserve that; otherwise auto-detect {tokens} or [UPPERCASE] placeholders
       var wasState=dLines[result.length]?dLines[result.length].isState:false;
-      var hasTokens=/\{[^}]+\}/.test(cleaned);
+      var hasTokens=/\{[^}]+\}|\[[A-Z][A-Z0-9_]*\]/.test(cleaned);
       result.push({text:cleaned,isState:wasState||hasTokens});
     }
   }
@@ -386,7 +415,7 @@ function renderSetup(){
 
   // Section 3: Script (single paste box)
   h+='<div class="sec"><h2><span class="sn">3</span>Script</h2>';
-  h+='<div class="hint">Paste your full numbered script below. Each numbered line becomes one prompt. After pasting, click the <b>BROAD</b> tag on any line to mark it as state-specific, then use <code>{state}</code>, <code>{city}</code>, etc. tokens in those lines.</div>';
+  h+='<div class="hint">Paste your full numbered script below. Each numbered line becomes one prompt. Click the <b>BROAD</b> tag on any line to mark it state-specific. Use <code>{state}</code>/<code>{city}</code> or <code>[STATE]</code>/<code>[CITY]</code> (uppercase) as swap placeholders.</div>';
   h+='<textarea id="f_script" placeholder="1. So I was out on a walk with my wife...\n2. And the couple is freaking out...\n3. I see this happening and I don\'t hesitate..." style="min-height:140px" oninput="previewScript(this.value)">'+esc(scriptRaw)+'</textarea>';
 
   // Parsed preview
@@ -409,13 +438,14 @@ function renderSetup(){
   h+='<div class="sec"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap"><h2 style="margin-bottom:0"><span class="sn">4</span>States <span style="font-size:12px;color:#64748b;font-weight:400">(optional)</span></h2>';
   h+='<div class="mode-toggle"><button class="mtab'+(!statesOn?' active':'')+'" onclick="setStates(false)">Off</button><button class="mtab'+(statesOn?' active':'')+'" onclick="setStates(true)">On</button></div></div>';
   if(statesOn){
-    h+='<div class="hint">Add the states you want to target. If you have STATE lines with {tokens}, swap fields will appear under each state.</div>';
+    h+='<div class="hint">Add the states you want to target. If your STATE lines contain <code>{tokens}</code> or <code>[UPPERCASE]</code> placeholders, swap fields appear under each state.</div>';
     for(var i=0;i<dStates.length;i++){
       h+='<div style="background:#12121f;border:1px solid #2a2a4a;border-radius:8px;padding:12px;margin-bottom:10px">';
       h+='<div class="sr"><input type="text" id="sn_'+i+'" value="'+esc(dStates[i].name)+'" placeholder="State '+(i+1)+'" style="font-weight:600" onchange="updSN('+i+',this.value)">';
       h+='<button class="rl" onclick="rmSt('+i+')">&times;</button></div>';
       for(var j=0;j<swKeys.length;j++){
         var k=swKeys[j];
+        if(k.toLowerCase()==='state')continue; // auto-filled from the state name above
         h+='<div style="display:flex;align-items:center;gap:8px;margin-top:6px">';
         h+='<span class="sk">{'+esc(k)+'}</span>';
         h+='<input type="text" id="ss_'+i+'_'+k+'" value="'+esc(dStates[i].swaps[k]||'')+'" placeholder="'+esc(k)+' value" style="margin-bottom:0;flex:1;font-size:13px" onchange="updSS('+i+',\''+k+'\',this.value)">';
