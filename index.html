@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Veo Prompt Generator</title>
+<title>VEO PROMPT GENERATOR 2.0 &#128293;</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{min-height:100vh;background:#0f0f1a;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
@@ -15,9 +15,8 @@ h2{font-size:16px;font-weight:700;color:#f8fafc;margin-bottom:12px}
 .sn{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:#f97316;color:#fff;font-size:12px;font-weight:700;margin-right:8px}
 .sec{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px;padding:24px;margin-bottom:20px}
 label{display:block;font-size:12px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
-input[type="text"],textarea,select{width:100%;padding:10px 14px;border-radius:8px;border:1px solid #2a2a4a;background:#12121f;color:#e2e8f0;font-size:14px;font-family:inherit;transition:border-color .15s;margin-bottom:16px}
-input[type="text"]:focus,textarea:focus,select:focus{outline:none;border-color:#f97316}
-select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='%2394a3b8' d='M6 8L0 0h12z'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer}
+input[type="text"],textarea{width:100%;padding:10px 14px;border-radius:8px;border:1px solid #2a2a4a;background:#12121f;color:#e2e8f0;font-size:14px;font-family:inherit;transition:border-color .15s;margin-bottom:16px}
+input[type="text"]:focus,textarea:focus{outline:none;border-color:#f97316}
 textarea{resize:vertical;min-height:80px;line-height:1.5}
 .row{display:flex;gap:12px}.row>*{flex:1}
 .hint{padding:10px 14px;background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.2);border-radius:8px;font-size:12px;color:#fdba74;margin-bottom:16px;line-height:1.5}
@@ -26,18 +25,19 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 .btngen{width:100%;padding:14px;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;background:linear-gradient(135deg,#f97316,#fb923c);color:#fff;border:none;border-radius:10px;cursor:pointer;transition:all .2s}
 .btngen:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(249,115,22,.3)}
 
-/* Toggle */
-.toggle-row{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.toggle{width:44px;height:24px;border-radius:12px;background:#2a2a4a;cursor:pointer;position:relative;transition:background .2s;border:none;padding:0}
-.toggle.on{background:#f97316}
-.toggle-dot{width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:left .2s}
-.toggle.on .toggle-dot{left:23px}
-.toggle-label{font-size:13px;color:#e2e8f0;font-weight:500}
+/* Upload zone */
+.upload-zone{border:2px dashed #2a2a4a;border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:all .15s;margin-bottom:16px}
+.upload-zone:hover{border-color:#f97316}
+.upload-zone.drag{border-color:#f97316;background:rgba(249,115,22,.08)}
+.upload-zone.has-img{border-style:solid;border-color:#22c55e;padding:12px}
+.upload-zone img{max-width:100%;max-height:200px;border-radius:6px}
+.upload-zone p{font-size:13px;color:#64748b;margin-top:8px}
+.upload-zone .up-label{font-size:14px;color:#94a3b8;font-weight:600}
 
 /* States */
 .sr{display:flex;gap:10px;align-items:center;margin-bottom:8px}
-.sr select{margin-bottom:0;flex:1}
-.sk{display:inline-block;padding:3px 8px;border-radius:4px;background:rgba(248,113,113,.1);color:#f87171;font-size:11px;font-weight:600;margin-right:6px;font-family:monospace}
+.sr input{margin-bottom:0;flex:1}
+.sk{display:inline-block;padding:3px 8px;border-radius:4px;background:rgba(248,113,113,.1);color:#f87171;font-size:11px;font-weight:600;margin-right:6px}
 .rl{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid #2a2a4a;background:transparent;color:#64748b;cursor:pointer;font-size:16px;flex-shrink:0}
 .rl:hover{border-color:#f87171;color:#f87171}
 
@@ -52,6 +52,18 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 .card{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:10px;padding:14px 18px;cursor:pointer;transition:all .2s}
 .card:hover{border-color:#f97316}
 .card.cp{background:#0d2818;border-color:#22c55e}
+.card.done{background:rgba(34,197,94,.06);border-color:rgba(34,197,94,.35)}
+.card.done .cs{color:#22c55e}
+.card.done .cl{color:#fdba74}
+.cts{font-size:11px;color:#22c55e;margin-top:6px;font-weight:500;letter-spacing:.02em}
+.cfull{margin-top:10px;padding:12px 14px;background:#0a0a14;border:1px solid #2a2a4a;border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:#cbd5e1;white-space:pre-wrap;word-break:break-word;line-height:1.5;max-height:320px;overflow-y:auto}
+.prev-toggle{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:6px;border:1px solid #2a2a4a;background:#1a1a2e;color:#94a3b8;cursor:pointer;font-size:12px;font-weight:600}
+.prev-toggle:hover{border-color:#f97316;color:#e2e8f0}
+.prev-toggle.on{border-color:#f97316;background:rgba(249,115,22,.1);color:#fdba74}
+.mode-toggle{display:inline-flex;border:1px solid #2a2a4a;border-radius:6px;overflow:hidden;background:#12121f}
+.mtab{padding:6px 14px;background:transparent;border:none;color:#94a3b8;cursor:pointer;font-size:12px;font-weight:700;letter-spacing:.04em}
+.mtab.active{background:#f97316;color:#fff}
+.mtab:hover:not(.active){color:#e2e8f0}
 .ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .cl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#f97316}
 .cs{font-size:11px;font-weight:600;color:#64748b}
@@ -65,187 +77,165 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 .btnback{background:#1a1a2e;color:#94a3b8;border:1px solid #2a2a4a;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600}
 .btnback:hover{border-color:#f97316;color:#e2e8f0}
 
-/* Parsed lines */
+/* Line chips in the parsed preview */
 .parsed-lines{display:flex;flex-direction:column;gap:6px;margin-top:12px}
 .pl{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;background:#12121f;border-radius:6px;border:1px solid #2a2a4a;font-size:13px;line-height:1.4}
 .pl-n{min-width:24px;height:24px;display:flex;align-items:center;justify-content:center;background:#2a2a4a;border-radius:5px;font-size:10px;font-weight:700;color:#94a3b8;flex-shrink:0}
 .pl-t{flex:1;color:#e2e8f0}
 .pl-tag{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;flex-shrink:0;border:1px solid #2a2a4a;background:#1a1a2e;color:#94a3b8;transition:all .15s}
 .pl-tag.st{border-color:#f87171;background:rgba(248,113,113,.12);color:#f87171}
+
+/* Welcome */
+.welcome-wrap{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 64px)}
+.welcome-card{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px;padding:32px;max-width:480px;width:100%}
+.welcome-card h1{margin-bottom:12px}
+.welcome-card p{font-size:13px;color:#94a3b8;margin-bottom:20px;line-height:1.5}
+
+/* Jobs dashboard */
+.jh{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:16px;flex-wrap:wrap}
+.jh-left h1{margin-bottom:4px}
+.jh-user{font-size:13px;color:#94a3b8;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.jh-user b{color:#e2e8f0}
+.icon-btn{width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid #2a2a4a;background:#12121f;color:#64748b;cursor:pointer;font-size:12px;padding:0}
+.icon-btn:hover{border-color:#f97316;color:#e2e8f0}
+.chip-btn{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:6px;border:1px solid #2a2a4a;background:#12121f;color:#94a3b8;cursor:pointer;font-size:12px;font-weight:600}
+.chip-btn:hover{border-color:#f97316;color:#e2e8f0}
+.btnnew{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:linear-gradient(135deg,#f97316,#fb923c);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700}
+.btnnew:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(249,115,22,.3)}
+.jtabs{display:flex;gap:8px;margin-bottom:16px}
+.jtab{padding:8px 14px;border-radius:8px;border:1px solid #2a2a4a;background:#1a1a2e;color:#94a3b8;cursor:pointer;font-size:13px;font-weight:600}
+.jtab.active{background:#f97316;border-color:#f97316;color:#fff}
+.jtab .cnt{opacity:.75;margin-left:4px;font-weight:500}
+.jlist{display:flex;flex-direction:column;gap:10px}
+.jcard{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:14px}
+.jcard:hover{border-color:#f97316}
+.jc-thumb{width:72px;height:72px;border-radius:8px;background:#12121f;border:1px solid #2a2a4a;flex-shrink:0;object-fit:cover;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#3f3f5f;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+img.jc-thumb{padding:0}
+.jc-body{flex:1;min-width:0}
+.jc-title{font-size:15px;font-weight:700;color:#f8fafc;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.jc-id{font-size:11px;color:#64748b;font-weight:500}
+.jc-by{display:inline-block;padding:2px 8px;border-radius:4px;background:#12121f;color:#94a3b8;font-size:11px;font-weight:600;border:1px solid #2a2a4a}
+.jc-meta{font-size:12px;color:#64748b;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.jc-meta .dot{color:#2a2a4a}
+.jc-right{display:flex;align-items:center;gap:8px}
+.jc-arrow{color:#64748b;font-size:20px}
+.jcard:hover .jc-arrow{color:#f97316}
+.jc-del{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid transparent;background:transparent;color:#64748b;cursor:pointer;font-size:16px}
+.jc-del:hover{border-color:#f87171;color:#f87171}
+.empty{padding:40px 20px;text-align:center;color:#64748b;font-size:13px;background:#1a1a2e;border:1px dashed #2a2a4a;border-radius:10px}
 </style>
 </head>
 <body>
 <div class="container" id="app"></div>
 <script>
-// === US STATES (+ DC) ===
-var US_STATES=['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District of Columbia','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
-
 // === STATE ===
-var view='setup';
+var view='jobs';
 var pName='';
-var voiceDesc='';
-var charDesc='';
-var camLocked=true;
-var negP='identity drift, wardrobe change, morphing faces, extra limbs, background shift, blurry, plastic skin, text on screen';
+var imgData=null; // base64 data URL
+var imgName='';
+var jsonAttrs='';
+var attrMode='json'; // 'json' | 'text'
+var statesOn=false;
 var scriptRaw='';
 var dLines=[]; // {text,isState}
 var dStates=[{name:'',swaps:{}},{name:'',swaps:{}},{name:'',swaps:{}},{name:'',swaps:{}},{name:'',swaps:{}}];
 var swKeys=[];
 var dStatesForGen=[];
 var gTab='broad',gState='',cpCard=null;
+var showGen=false;
+var showFull=false;
 
-// Token patterns: {x} | [x] | **x**
-var TOKEN_RE=/\{[^}]+\}|\[[^\]]+\]|\*\*[^*]+\*\*/;
+// Jobs / user persistence
+var uName='';
+var jobs=[]; // {id,name,user,created,updated,data,copied}
+var curJobId=null;
+var jobsTab='my'; // 'my' | 'all'
+var copied={}; // map: promptId -> true
+
+var LS_USER='veo_user',LS_JOBS='veo_jobs';
+function lsGet(k,fb){try{var v=localStorage.getItem(k);return v==null?fb:JSON.parse(v)}catch(e){return fb}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function loadUser(){uName=lsGet(LS_USER,'')||''}
+function saveUser(){lsSet(LS_USER,uName)}
+function loadJobs(){jobs=lsGet(LS_JOBS,[])||[]}
+function saveJobs(){lsSet(LS_JOBS,jobs)}
+function nowISO(){return new Date().toISOString()}
+function fmtDate(iso){if(!iso)return'';var d=new Date(iso);var pad=function(n){return(n<10?'0':'')+n};return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes())}
+function newJobId(){var m=0;jobs.forEach(function(j){if(j.id>m)m=j.id});return m+1}
+
+function snapshotJob(){
+  return{
+    pName:pName,imgData:imgData,imgName:imgName,jsonAttrs:jsonAttrs,attrMode:attrMode,statesOn:statesOn,
+    scriptRaw:scriptRaw,
+    dLines:JSON.parse(JSON.stringify(dLines)),
+    dStates:JSON.parse(JSON.stringify(dStates))
+  };
+}
+function hydrateJob(j){
+  var d=j.data||{};
+  pName=d.pName||'';imgData=d.imgData||null;imgName=d.imgName||'';
+  jsonAttrs=d.jsonAttrs||d.voiceDesc||'';
+  attrMode=d.attrMode||'json';
+  dStates=d.dStates?JSON.parse(JSON.stringify(d.dStates)):[{name:'',swaps:{}},{name:'',swaps:{}},{name:'',swaps:{}},{name:'',swaps:{}},{name:'',swaps:{}}];
+  statesOn=d.statesOn!==undefined?!!d.statesOn:dStates.some(function(s){return(s.name||'').trim()!==''});
+  scriptRaw=d.scriptRaw||'';
+  dLines=d.dLines?JSON.parse(JSON.stringify(d.dLines)):[];
+  copied=j.copied?JSON.parse(JSON.stringify(j.copied)):{};
+}
+function resetProjectState(){
+  pName='';imgData=null;imgName='';jsonAttrs='';attrMode='json';statesOn=false;
+  scriptRaw='';dLines=[];
+  dStates=[{name:'',swaps:{}},{name:'',swaps:{}},{name:'',swaps:{}},{name:'',swaps:{}},{name:'',swaps:{}}];
+  dStatesForGen=[];copied={};curJobId=null;gTab='broad';gState='';cpCard=null;showGen=false;
+}
+function persistCurrentJob(){
+  if(curJobId==null){
+    var id=newJobId();
+    var j={id:id,name:pName||'Untitled',user:uName||'?',created:nowISO(),updated:nowISO(),data:snapshotJob(),copied:copied,promptTotal:countPrompts()};
+    jobs.push(j);curJobId=id;
+  }else{
+    var j=null;jobs.forEach(function(x){if(x.id===curJobId)j=x});
+    if(!j){var id=newJobId();j={id:id,user:uName||'?',created:nowISO()};jobs.push(j);curJobId=id}
+    j.name=pName||j.name||'Untitled';
+    j.data=snapshotJob();j.copied=copied;j.updated=nowISO();j.promptTotal=countPrompts();
+  }
+  saveJobs();
+}
+function countPrompts(){
+  var b=0,s=0;dLines.forEach(function(l){if(l.isState)s++;else b++});
+  var filled=dStates.filter(function(x){return(x.name||'').trim()!==''}).length;
+  if(statesOn&&filled>0)return b+s*filled;
+  return dLines.length;
+}
+function countCopied(){var n=0;for(var k in copied){if(copied[k])n++}return n}
+function fmtTime(iso){if(!iso||iso===true)return'';var d=new Date(iso);var h=d.getHours(),m=d.getMinutes(),ap=h>=12?'pm':'am';h=h%12||12;return h+':'+(m<10?'0':'')+m+ap}
+function fmtStamp(iso){if(!iso||iso===true)return'';var d=new Date(iso),t=new Date();var same=d.toDateString()===t.toDateString();if(same)return'Copied '+fmtTime(iso);var pad=function(n){return(n<10?'0':'')+n};return'Copied '+(d.getMonth()+1)+'/'+d.getDate()+' '+fmtTime(iso)}
 
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/\x3c/g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function escRe(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
+function detectKeys(){var k={};dLines.forEach(function(l){if(l.isState){var m=l.text.match(/\{([^}]+)\}/g);if(m)m.forEach(function(x){k[x.slice(1,-1)]=1})}});swKeys=Object.keys(k)}
+function fillS(t,sd){var r=t;swKeys.forEach(function(k){r=r.replace(new RegExp('\\{'+k+'\\}','g'),sd.swaps[k]||'{'+k+'}')});return r}
+function hlS(t,sd){var h=esc(t);swKeys.forEach(function(k){var v=sd.swaps[k]||'{'+k+'}';h=h.replace(new RegExp('\\{'+k+'\\}','g'),'<span class="swap">'+esc(v)+'</span>')});return h}
 
-function normKey(s){
-  var prev=null,cur=s.trim();
-  while(cur!==prev){
-    prev=cur;
-    cur=cur.replace(/^\*\*(.+)\*\*$/,'$1').replace(/^\{(.+)\}$/,'$1').replace(/^\[(.+)\]$/,'$1').trim();
+function parseAttrs(){
+  var raw=(jsonAttrs||'').trim();
+  if(!raw)return{ok:true,empty:true,obj:null};
+  if(attrMode!=='json')return{ok:true,empty:false,obj:null};
+  try{var o=JSON.parse(raw);if(o&&typeof o==='object'&&!Array.isArray(o))return{ok:true,empty:false,obj:o};return{ok:false,err:'Root must be a JSON object.'}}
+  catch(e){return{ok:false,err:e.message}}
+}
+function escapeDial(d){return d.replace(/\\/g,'\\\\').replace(/"/g,'\\"')}
+function buildP(dial){
+  var raw=(jsonAttrs||'').trim();
+  if(!raw)return'character says ("'+escapeDial(dial)+'")';
+  if(attrMode==='text'){
+    if(raw.indexOf('{dialogue}')!==-1)return raw.replace(/\{dialogue\}/g,dial);
+    return raw+'\n\ncharacter says ("'+escapeDial(dial)+'")';
   }
-  return cur;
-}
-function detectKeys(){
-  var k={};
-  dLines.forEach(function(l){
-    if(!l.isState)return;
-    var m;
-    m=l.text.match(/\{([^}]+)\}/g);if(m)m.forEach(function(x){var n=normKey(x);if(n)k[n]=1});
-    m=l.text.match(/\[([^\]]+)\]/g);if(m)m.forEach(function(x){var n=normKey(x);if(n)k[n]=1});
-    m=l.text.match(/\*\*([^*]+)\*\*/g);if(m)m.forEach(function(x){var n=normKey(x);if(n)k[n]=1});
-  });
-  swKeys=Object.keys(k);
-}
-
-function resolveSwap(k,sd){
-  if(!sd)return'';
-  if(k.toLowerCase()==='state')return sd.name||'';
-  return sd.swaps[k]||'';
-}
-
-function fillS(t,sd){
-  var r=t;
-  if(!sd)return r;
-  swKeys.forEach(function(k){
-    var v=resolveSwap(k,sd);
-    var ek=escRe(k);
-    // Combined wrappers first so the outer ** handles the full chunk
-    r=r.replace(new RegExp('\\*\\*\\{'+ek+'\\}\\*\\*','g'),v||'**{'+k+'}**');
-    r=r.replace(new RegExp('\\*\\*\\['+ek+'\\]\\*\\*','g'),v||'**['+k+']**');
-    r=r.replace(new RegExp('\\*\\*'+ek+'\\*\\*','g'),v||'**'+k+'**');
-    r=r.replace(new RegExp('\\{'+ek+'\\}','g'),v||'{'+k+'}');
-    r=r.replace(new RegExp('\\['+ek+'\\]','g'),v||'['+k+']');
-  });
-  return r;
-}
-
-function stripTokens(t){
-  return(t||'').replace(/\*\*([^*]+)\*\*/g,'$1').replace(/\[([^\]]+)\]/g,'$1').replace(/\{([^}]+)\}/g,'$1');
-}
-function hlTokens(t){
-  var h=esc(t);
-  h=h.replace(/\*\*([^*]+)\*\*/g,'<span class="swap">$1</span>');
-  h=h.replace(/\[([^\]]+)\]/g,'<span class="swap">$1</span>');
-  h=h.replace(/\{([^}]+)\}/g,'<span class="swap">$1</span>');
-  return h;
-}
-function hlS(t,sd){
-  var h=esc(t);
-  if(!sd)return h;
-  swKeys.forEach(function(k){
-    var v=resolveSwap(k,sd);
-    var ek=escRe(k);
-    var wrap=function(m){return'<span class="swap">'+esc(v||m)+'</span>'};
-    h=h.replace(new RegExp('\\*\\*\\{'+ek+'\\}\\*\\*','g'),wrap('**{'+k+'}**'));
-    h=h.replace(new RegExp('\\*\\*\\['+ek+'\\]\\*\\*','g'),wrap('**['+k+']**'));
-    h=h.replace(new RegExp('\\*\\*'+ek+'\\*\\*','g'),wrap('**'+k+'**'));
-    h=h.replace(new RegExp('\\{'+ek+'\\}','g'),wrap('{'+k+'}'));
-    h=h.replace(new RegExp('\\['+ek+'\\]','g'),wrap('['+k+']'));
-  });
-  return h;
-}
-
-function balanceBraces(t){
-  var opens=0,str=false,escc=false,q=null;
-  for(var i=0;i<t.length;i++){
-    var c=t.charAt(i);
-    if(escc){escc=false;continue}
-    if(c==='\\'){escc=true;continue}
-    if(str){if(c===q)str=false;continue}
-    if(c==='"'){str=true;q=c;continue}
-    if(c==='{')opens++;
-    else if(c==='}')opens--;
-  }
-  while(opens>0){t+='}';opens--}
-  return t;
-}
-function parseVoice(raw){
-  var s=(raw||'').trim();
-  if(!s)return null;
-  var tryParse=function(t){try{return JSON.parse(t)}catch(e){return null}};
-  var normalize=function(t){return t.replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/,(\s*[}\]])/g,'$1')};
-  var attempt=normalize(s);
-  var obj=tryParse(attempt) || tryParse(balanceBraces(attempt));
-  if(!obj){
-    // pasted a key:value fragment like `"voice_lock": { ... }` (one or more top-level keys)
-    if(/^"[a-zA-Z_]+"\s*:/.test(attempt)){
-      var wrapped='{'+attempt.replace(/,\s*$/,'')+'}';
-      obj=tryParse(wrapped)||tryParse(balanceBraces(wrapped));
-    }
-  }
-  if(!obj){
-    // pasted raw inner fields without wrapping
-    if(attempt.indexOf(':')>-1 && attempt.indexOf('{')<0){
-      var wrapped='{'+attempt.replace(/,\s*$/,'')+'}';
-      obj=tryParse(wrapped)||tryParse(balanceBraces(wrapped));
-    }
-  }
-  if(obj && typeof obj==='object')return{type:'json',data:obj};
-  return{type:'text',data:s};
-}
-function buildP(dial,lab){
-  var p={id:lab,model:"veo",mode:"frame_to_video",duration_seconds:8,aspect_ratio:"16:9",style:"photorealistic, natural motion, preserve original image fidelity"};
-  var vp=parseVoice(voiceDesc);
-  if(vp){
-    var charId=(pName||'CHARACTER').toUpperCase().replace(/[^A-Z0-9]+/g,'_')+'_V1';
-    if(vp.type==='text'){
-      p.voice_lock={character_id:charId,consistency:"STRICT",do_not_drift:true,voice_description:vp.data};
-    }else{
-      var data=vp.data;
-      if(data.voice_lock && typeof data.voice_lock==='object'){
-        var vl={character_id:charId};
-        for(var kk in data.voice_lock)vl[kk]=data.voice_lock[kk];
-        if(vl.do_not_drift===undefined)vl.do_not_drift=true;
-        p.voice_lock=vl;
-        // Merge any OTHER top-level keys pasted alongside voice_lock
-        for(var kk in data){if(kk!=='voice_lock')p[kk]=data[kk]}
-      }else{
-        // No voice_lock wrapper — treat entire object as voice_lock body
-        var vl={character_id:charId};
-        for(var kk in data)vl[kk]=data[kk];
-        if(vl.do_not_drift===undefined)vl.do_not_drift=true;
-        p.voice_lock=vl;
-      }
-    }
-  }
-  p.camera={movement:camLocked?"locked, no movement":"very subtle handheld micro drift, almost imperceptible",stabilization:camLocked?"locked":"natural"};
-  p.performance={mouth_sync:"high precision, realistic phoneme mapping, no over-exaggeration",gesture_level:"minimal, mostly facial-driven performance"};
-  p.continuity_rules=["Do not change wardrobe","Do not change environment","Do not change lighting","Maintain exact character identity across generations","No new objects introduced","No camera cuts"];
-  p.audio={dialogue:dial,delivery_rules:["Start speaking immediately","Natural pauses for storytelling emphasis","Subtle breath and mouth sounds for realism","End with a small pause after speaking"],effects:"none",music:"none"};
-  p.negative_prompt=negP;
-  // Merge in additional character details (plain text or JSON)
-  var cp=parseVoice(charDesc);
-  if(cp){
-    if(cp.type==='text'){
-      p.character_notes=cp.data;
-    }else{
-      for(var ck in cp.data)p[ck]=cp.data[ck];
-    }
-  }
-  return JSON.stringify(p,null,2);
+  var p=parseAttrs();
+  if(!p.ok)return'character says ("'+escapeDial(dial)+'")';
+  var out=JSON.parse(JSON.stringify(p.obj));
+  out.character_says=dial;
+  return JSON.stringify(out,null,2);
 }
 
 // === PARSE SCRIPT ===
@@ -257,8 +247,9 @@ function parseScript(raw){
     if(!line)continue;
     var cleaned=line.replace(/^\d+[\.\)\:\-\s]+/,'').trim();
     if(cleaned){
+      // If user manually toggled, preserve that; otherwise auto-detect {tokens}
       var wasState=dLines[result.length]?dLines[result.length].isState:false;
-      var hasTokens=TOKEN_RE.test(cleaned);
+      var hasTokens=/\{[^}]+\}/.test(cleaned);
       result.push({text:cleaned,isState:wasState||hasTokens});
     }
   }
@@ -268,161 +259,304 @@ function parseScript(raw){
 function saveF(){
   var g=function(id){var el=document.getElementById(id);return el?el.value:''};
   pName=g('f_pn');
-  voiceDesc=g('f_voice');
-  charDesc=g('f_char');
-  negP=g('f_neg')||negP;
+  jsonAttrs=g('f_json');
   var raw=g('f_script');
-  if(raw!==scriptRaw){scriptRaw=raw;dLines=parseScript(raw)}
+  if(raw!==scriptRaw){
+    scriptRaw=raw;
+    dLines=parseScript(raw);
+  }
 }
+
+// === RENDER WELCOME ===
+function renderWelcome(){
+  var h='<div class="welcome-wrap"><div class="welcome-card">';
+  h+='<h1>VEO PROMPT GENERATOR 2.0 \ud83d\udd25</h1>';
+  h+='<p>What\u2019s your name? We tag every job with it so you can find your past projects later and so teammates can browse each other\u2019s prompts.</p>';
+  h+='<input type="text" id="f_user" placeholder="First name" value="'+esc(uName)+'" style="margin-bottom:16px" onkeydown="if(event.key===\'Enter\')submitUser()">';
+  h+='<button class="btngen" onclick="submitUser()">Continue</button>';
+  h+='<p style="font-size:12px;color:#64748b;margin-top:16px;margin-bottom:0">Stored in this browser. Click \u201CSwitch user\u201D in the header to change it anytime.</p>';
+  h+='</div></div>';
+  document.getElementById('app').innerHTML=h;
+  var el=document.getElementById('f_user');if(el)el.focus();
+}
+function submitUser(){
+  var el=document.getElementById('f_user');var v=el?el.value.trim():'';
+  if(!v)return;uName=v;saveUser();view='jobs';renderJobs();
+}
+
+// === RENDER JOBS ===
+function renderJobs(){
+  var my=jobs.filter(function(j){return(j.user||'').toLowerCase()===(uName||'').toLowerCase()});
+  var all=jobs.slice();
+  var list=jobsTab==='my'?my:all;
+  list.sort(function(a,b){return(b.updated||'').localeCompare(a.updated||'')});
+
+  var h='<div class="jh"><div class="jh-left">';
+  h+='<h1>VEO PROMPT GENERATOR 2.0 \ud83d\udd25</h1>';
+  h+='<div class="jh-user">Signed in as <b>'+esc(uName||'?')+'</b>';
+  h+=' <button class="icon-btn" title="Edit name" onclick="editName()">\u270E</button>';
+  h+=' <span style="color:#2a2a4a">\u2022</span>';
+  h+=' <button class="chip-btn" onclick="switchUser()">\u21AA Switch user</button>';
+  h+='</div></div>';
+  h+='<button class="btnnew" onclick="newJob()">+ New job</button></div>';
+
+  h+='<div class="jtabs">';
+  h+='<button class="jtab'+(jobsTab==='my'?' active':'')+'" onclick="setJT(\'my\')">My jobs <span class="cnt">('+my.length+')</span></button>';
+  h+='<button class="jtab'+(jobsTab==='all'?' active':'')+'" onclick="setJT(\'all\')">All jobs <span class="cnt">('+all.length+')</span></button>';
+  h+='</div>';
+
+  if(list.length===0){
+    h+='<div class="empty">'+(jobsTab==='my'?'No jobs yet. Click <b>+ New job</b> to start one.':'No jobs saved in this browser yet.')+'</div>';
+  }else{
+    h+='<div class="jlist">';
+    list.forEach(function(j){
+      var total=j.promptTotal||0;var cp=0;if(j.copied){for(var k in j.copied){if(j.copied[k])cp++}}
+      var img=j.data&&j.data.imgData;
+      h+='<div class="jcard" onclick="openJob('+j.id+')">';
+      h+=img?'<img class="jc-thumb" src="'+img+'" alt="">':'<div class="jc-thumb">no image</div>';
+      h+='<div class="jc-body"><div class="jc-title">'+esc(j.name||'Untitled')+' <span class="jc-id">#'+j.id+'</span> <span class="jc-by">by '+esc(j.user||'?')+'</span></div>';
+      h+='<div class="jc-meta">'+total+' prompts <span class="dot">\u00B7</span> '+cp+'/'+total+' copied <span class="dot">\u00B7</span> updated '+esc(fmtDate(j.updated))+'</div></div>';
+      h+='<div class="jc-right"><button class="jc-del" title="Delete job" onclick="event.stopPropagation();delJob('+j.id+')">\u00D7</button><span class="jc-arrow">\u2192</span></div>';
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+  h+='<div style="margin-top:32px;text-align:center;font-size:12px;color:#64748b">Local-first \u00B7 saved in this browser\u2019s storage</div>';
+  document.getElementById('app').innerHTML=h;
+}
+function setJT(t){jobsTab=t;renderJobs()}
+function switchUser(){uName='';saveUser();view='welcome';renderWelcome()}
+function editName(){
+  var v=prompt('Your name:',uName||'');
+  if(v!=null&&v.trim()){uName=v.trim();saveUser();renderJobs()}
+}
+function newJob(){resetProjectState();view='setup';renderSetup();window.scrollTo(0,0)}
+function openJob(id){
+  var j=null;jobs.forEach(function(x){if(x.id===id)j=x});if(!j)return;
+  hydrateJob(j);curJobId=id;detectKeys();
+  dStatesForGen=dStates.filter(function(x){return(x.name||'').trim()!==''});
+  showGen=dLines.length>0;gTab='broad';gState='';
+  view='setup';renderSetup();window.scrollTo(0,0);
+}
+function delJob(id){
+  if(!confirm('Delete this job? This cannot be undone.'))return;
+  jobs=jobs.filter(function(j){return j.id!==id});
+  if(curJobId===id)curJobId=null;
+  saveJobs();renderJobs();
+}
+function backToJobs(){view='jobs';renderJobs();window.scrollTo(0,0)}
 
 // === RENDER SETUP ===
 function renderSetup(){
-  var h='<h1>Veo Prompt Generator</h1><p class="sub">Set up your project, then generate click-to-copy prompts for every line and state.</p>';
+  var h='<div class="gh"><div><h1>VEO PROMPT GENERATOR 2.0 \ud83d\udd25</h1><p class="sub" style="margin-bottom:0">Set up your project, then generate click-to-copy prompts for every line and state.</p></div>';
+  h+='<button class="btnback" onclick="backToJobs()">\u2190 Jobs</button></div>';
 
-  // Section 1: Project
-  h+='<div class="sec"><h2><span class="sn">1</span>Project</h2>';
-  h+='<label>Project Name</label><input type="text" id="f_pn" value="'+esc(pName)+'" placeholder="e.g. Selling Christmas \u2014 State Podcast" style="margin-bottom:0">';
+  // Section 1: Project + Image
+  h+='<div class="sec"><h2><span class="sn">1</span>Project &amp; Reference Image</h2>';
+  h+='<label>Project Name</label><input type="text" id="f_pn" value="'+esc(pName)+'" placeholder="e.g. Selling Christmas \u2014 State Podcast">';
+  h+='<label>Reference Image</label>';
+  h+='<div id="dropzone" class="upload-zone'+(imgData?' has-img':'')+'" onclick="document.getElementById(\'f_img\').click()" ondragover="dzOver(event)" ondragleave="dzLeave(event)" ondrop="dzDrop(event)">';
+  if(imgData){
+    h+='<img src="'+imgData+'" alt="Reference"><p>'+esc(imgName)+' \u2014 click or drop to replace</p>';
+  }else{
+    h+='<p class="up-label">Click or drop image to upload</p><p>PNG, JPG, or WEBP</p>';
+  }
+  h+='</div>';
+  h+='<input type="file" id="f_img" accept="image/*" style="display:none" onchange="handleImg(this)">';
   h+='</div>';
 
-  // Section 2: Voice
-  h+='<div class="sec"><h2><span class="sn">2</span>Voice Description</h2>';
-  h+='<div class="hint">Describe the voice in plain English <b>or</b> paste a <code>voice_lock</code> JSON block from an existing prompt. Both are supported.</div>';
-  h+='<textarea id="f_voice" placeholder="Plain English: 50-year-old Boston accent, Car Talk energy, mid-baritone, slightly raspy...&#10;&#10;OR paste a voice_lock JSON block:&#10;&quot;voice_lock&quot;: {&#10;  &quot;gender&quot;: &quot;male&quot;,&#10;  &quot;age&quot;: &quot;50s-60s&quot;,&#10;  &quot;tone&quot;: &quot;warm, confident...&quot;,&#10;  ...&#10;}" style="min-height:140px;margin-bottom:16px;font-family:inherit">'+esc(voiceDesc)+'</textarea>';
-  h+='<label>Additional Character Details <span style="text-transform:none;color:#64748b;font-weight:400">(optional)</span></label>';
-  h+='<div class="hint">Anything else you want in the prompt \u2014 performance, wardrobe, mannerisms, etc. Plain text adds a <code>character_notes</code> field. Pasted JSON merges top-level keys (e.g. a <code>performance</code> block overrides the default).</div>';
-  h+='<textarea id="f_char" placeholder="Plain text: wears a gray flannel, leans against the driver-side door, hands relaxed...&#10;&#10;OR JSON block:&#10;&quot;performance&quot;: {&#10;  &quot;mouth_sync&quot;: &quot;high precision, realistic phoneme mapping&quot;,&#10;  &quot;gesture_level&quot;: &quot;minimal, mostly facial-driven performance&quot;&#10;}" style="min-height:120px;margin-bottom:0;font-family:inherit">'+esc(charDesc)+'</textarea>';
+  // Section 2: Paste Attributes (JSON or Text)
+  var attrCheck=parseAttrs();
+  var isJson=attrMode==='json';
+  h+='<div class="sec"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap"><h2 style="margin-bottom:0"><span class="sn">2</span>Paste Attributes</h2>';
+  h+='<div class="mode-toggle"><button class="mtab'+(isJson?' active':'')+'" onclick="setMode(\'json\')">JSON</button><button class="mtab'+(!isJson?' active':'')+'" onclick="setMode(\'text\')">Text</button></div></div>';
+  if(isJson){
+    h+='<div class="hint">Paste any JSON attributes you want baked into every prompt \u2014 voice, camera, style, continuity rules, anything. Dialogue is injected as <code>character_says</code>. Empty = output is just <code>character says ("dialogue")</code>.</div>';
+    h+='<textarea id="f_json" placeholder=\'{\\n  "style": "photorealistic, natural motion",\\n  "camera": { "movement": "locked" },\\n  "voice_lock": { "voice_description": "50-year-old Boston accent" }\\n}\' style="min-height:140px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px" oninput="onAttrs(this.value)">'+esc(jsonAttrs)+'</textarea>';
+    if(jsonAttrs.trim()&&!attrCheck.ok){
+      h+='<div style="padding:10px 14px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.3);border-radius:8px;font-size:12px;color:#f87171;margin-top:-8px">Invalid JSON: '+esc(attrCheck.err||'')+'</div>';
+    }else if(jsonAttrs.trim()&&attrCheck.ok){
+      h+='<div style="padding:10px 14px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:8px;font-size:12px;color:#22c55e;margin-top:-8px">\u2713 Valid JSON</div>';
+    }
+  }else{
+    h+='<div class="hint">Write your prompt as plain text. Use <code>{dialogue}</code> anywhere to drop the line in-place \u2014 otherwise <code>character says ("dialogue")</code> gets appended at the end. Empty = output is just <code>character says ("dialogue")</code>.</div>';
+    h+='<textarea id="f_json" placeholder="e.g. A cinematic wide shot of a woman in a diner. She looks at the camera and {dialogue}" style="min-height:140px;line-height:1.5" oninput="onAttrs(this.value)">'+esc(jsonAttrs)+'</textarea>';
+  }
   h+='</div>';
 
-  // Section 3: Camera
-  h+='<div class="sec"><h2><span class="sn">3</span>Camera</h2>';
-  h+='<div class="toggle-row" style="margin-bottom:0">';
-  h+='<button class="toggle'+(camLocked?' on':'')+'" onclick="camLocked=!camLocked;renderSetup()"><div class="toggle-dot"></div></button>';
-  h+='<span class="toggle-label">'+(camLocked?'Camera locked (no movement)':'Camera unlocked (subtle drift)')+'</span>';
-  h+='</div></div>';
-
-  // Section 4: Script
-  h+='<div class="sec"><h2><span class="sn">4</span>Script</h2>';
-  h+='<div class="hint">Paste your full numbered script below. Each numbered line becomes one prompt. Lines with <code>{token}</code>, <code>[token]</code>, or <code>**token**</code> are auto-tagged STATE \u2014 these only get swapped if you fill in Section 5. If your script already has the state baked in, leave Section 5 empty and every line generates as-is.</div>';
+  // Section 3: Script (single paste box)
+  h+='<div class="sec"><h2><span class="sn">3</span>Script</h2>';
+  h+='<div class="hint">Paste your full numbered script below. Each numbered line becomes one prompt. After pasting, click the <b>BROAD</b> tag on any line to mark it as state-specific, then use <code>{state}</code>, <code>{city}</code>, etc. tokens in those lines.</div>';
   h+='<textarea id="f_script" placeholder="1. So I was out on a walk with my wife...\n2. And the couple is freaking out...\n3. I see this happening and I don\'t hesitate..." style="min-height:140px" oninput="previewScript(this.value)">'+esc(scriptRaw)+'</textarea>';
 
+  // Parsed preview
   if(dLines.length>0){
     h+='<div style="font-size:12px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">'+dLines.length+' lines detected</div>';
     h+='<div class="parsed-lines">';
     for(var i=0;i<dLines.length;i++){
-      h+='<div class="pl"><span class="pl-n">'+(i+1)+'</span>';
+      h+='<div class="pl">';
+      h+='<span class="pl-n">'+(i+1)+'</span>';
       h+='<span class="pl-t">'+esc(dLines[i].text)+'</span>';
-      h+='<span class="pl-tag'+(dLines[i].isState?' st':'')+'" onclick="togLine('+i+')">'+(dLines[i].isState?'STATE':'BROAD')+'</span></div>';
-    }
-    h+='</div>';
-  }
-  h+='</div>';
-
-  // Section 5: States
-  detectKeys();
-  h+='<div class="sec"><h2><span class="sn">5</span>States <span style="font-size:12px;color:#64748b;font-weight:400">(optional)</span></h2>';
-  h+='<div class="hint">Only fill this out if you\u2019re running multi-state variations and your script has <code>{token}</code> swaps. Leave it empty if the state is already written into the script.</div>';
-  for(var i=0;i<dStates.length;i++){
-    h+='<div style="background:#12121f;border:1px solid #2a2a4a;border-radius:8px;padding:12px;margin-bottom:10px">';
-    h+='<div class="sr"><select id="sn_'+i+'" onchange="updSN('+i+',this.value)">';
-    h+='<option value="">\u2014 Select state '+(i+1)+' \u2014</option>';
-    for(var s=0;s<US_STATES.length;s++){
-      var stName=US_STATES[s];
-      h+='<option value="'+esc(stName)+'"'+(dStates[i].name===stName?' selected':'')+'>'+esc(stName)+'</option>';
-    }
-    h+='</select><button class="rl" onclick="rmSt('+i+')">&times;</button></div>';
-    for(var j=0;j<swKeys.length;j++){
-      var k=swKeys[j];
-      if(k.toLowerCase()==='state')continue; // auto-filled from the dropdown above
-      h+='<div style="display:flex;align-items:center;gap:8px;margin-top:6px">';
-      h+='<span class="sk">'+esc(k)+'</span>';
-      h+='<input type="text" id="ss_'+i+'_'+j+'" value="'+esc(dStates[i].swaps[k]||'')+'" placeholder="'+esc(k)+' value" style="margin-bottom:0;flex:1;font-size:13px" onchange="updSS('+i+',\''+esc(k).replace(/\\/g,'\\\\').replace(/\'/g,"\\'")+'\',this.value)">';
+      h+='<span class="pl-tag'+(dLines[i].isState?' st':'')+'" onclick="togLine('+i+')">'+(dLines[i].isState?'STATE':'BROAD')+'</span>';
       h+='</div>';
     }
     h+='</div>';
   }
-  h+='<button class="btn2" style="margin-top:10px" onclick="addSt()">+ Add State</button></div>';
+  h+='</div>';
 
-  // Negative prompt
-  h+='<div class="sec" style="padding:16px 24px"><details><summary style="font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.06em;cursor:pointer">Negative Prompt (advanced)</summary>';
-  h+='<input type="text" id="f_neg" value="'+esc(negP)+'" style="margin-top:12px;margin-bottom:0">';
-  h+='</details></div>';
-
-  h+='<button class="btngen" onclick="doGen()">Generate Prompts</button>';
-  document.getElementById('app').innerHTML=h;
-}
-
-// === RENDER GENERATOR ===
-function renderGen(){
+  // Section 4: States (optional)
   detectKeys();
-  var bLines=[],sLines=[];
-  var sts=dStatesForGen;
-  if(sts.length===0){
-    // No states configured — everything generates as a single batch.
-    bLines=dLines.slice();
+  h+='<div class="sec"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap"><h2 style="margin-bottom:0"><span class="sn">4</span>States <span style="font-size:12px;color:#64748b;font-weight:400">(optional)</span></h2>';
+  h+='<div class="mode-toggle"><button class="mtab'+(!statesOn?' active':'')+'" onclick="setStates(false)">Off</button><button class="mtab'+(statesOn?' active':'')+'" onclick="setStates(true)">On</button></div></div>';
+  if(statesOn){
+    h+='<div class="hint">Add the states you want to target. If you have STATE lines with {tokens}, swap fields will appear under each state.</div>';
+    for(var i=0;i<dStates.length;i++){
+      h+='<div style="background:#12121f;border:1px solid #2a2a4a;border-radius:8px;padding:12px;margin-bottom:10px">';
+      h+='<div class="sr"><input type="text" id="sn_'+i+'" value="'+esc(dStates[i].name)+'" placeholder="State '+(i+1)+'" style="font-weight:600" onchange="updSN('+i+',this.value)">';
+      h+='<button class="rl" onclick="rmSt('+i+')">&times;</button></div>';
+      for(var j=0;j<swKeys.length;j++){
+        var k=swKeys[j];
+        h+='<div style="display:flex;align-items:center;gap:8px;margin-top:6px">';
+        h+='<span class="sk">{'+esc(k)+'}</span>';
+        h+='<input type="text" id="ss_'+i+'_'+k+'" value="'+esc(dStates[i].swaps[k]||'')+'" placeholder="'+esc(k)+' value" style="margin-bottom:0;flex:1;font-size:13px" onchange="updSS('+i+',\''+k+'\',this.value)">';
+        h+='</div>';
+      }
+      h+='</div>';
+    }
+    h+='<button class="btn2" style="margin-top:10px" onclick="addSt()">+ Add State</button>';
   }else{
-    dLines.forEach(function(l){if(l.isState)sLines.push(l);else bLines.push(l)});
-  }
-  var tB=bLines.length,tS=sLines.length*sts.length;
-  if(!gState&&sts.length>0)gState=sts[0].name;
-  var cSt=null;sts.forEach(function(s){if(s.name===gState)cSt=s});
-  var hasSt=sLines.length>0&&sts.length>0;
-
-  var h='<div class="gh"><div><h1>'+esc(pName||'Veo Prompt Generator')+'</h1>';
-  h+='<p style="font-size:13px;color:#94a3b8;margin-top:4px"><span class="accent">';
-  h+=tS>0?(tB+' broad + '+tS+' state = '+(tB+tS)+' total prompts'):(tB+' prompts');
-  h+='</span></p></div><button class="btnback" onclick="backSet()">Edit Setup</button></div>';
-
-  if(hasSt){
-    h+='<div class="tabs"><button class="tab'+(gTab==='broad'?' active':'')+'" onclick="setGT(\'broad\')">Batch 1: Broad ('+tB+')</button>';
-    h+='<button class="tab'+(gTab==='state'?' active':'')+'" onclick="setGT(\'state\')">Batch 2: State ('+sLines.length+' x '+sts.length+')</button></div>';
-  }
-
-  if(gTab==='state'&&hasSt){
-    h+='<div class="pills">';
-    sts.forEach(function(s){h+='<button class="pill'+(gState===s.name?' active':'')+'" onclick="setGS(\''+esc(s.name)+'\')">'+esc(s.name)+'</button>'});
-    h+='</div>';
-  }
-
-  h+='<div class="cards">';
-  if(gTab==='broad'||!hasSt){
-    bLines.forEach(function(bl){
-      var ln=dLines.indexOf(bl)+1;
-      var isSt=bl.isState;
-      var cid=(isSt?'state':'broad')+'_L'+ln;
-      var ic=cpCard===cid;
-      var lblStyle=isSt?' style="color:#f87171"':'';
-      var lblTxt=(isSt?'State':'Broad')+' \u2014 L'+ln;
-      h+='<div class="card'+(ic?' cp':'')+'" onclick="cpC(\''+cid+'\')">';
-      h+='<div class="ch"><span class="cl"'+lblStyle+'>'+lblTxt+'</span><span class="cs">'+(ic?'Copied!':'Click to copy')+'</span></div>';
-      h+='<div class="ct">'+(isSt?hlTokens(bl.text):esc(bl.text))+'</div></div>';
-    });
-  }else if(cSt){
-    sLines.forEach(function(sl){
-      var ln=dLines.indexOf(sl)+1;var cid=gState+'_L'+ln;var ic=cpCard===cid;
-      h+='<div class="card'+(ic?' cp':'')+'" onclick="cpC(\''+esc(cid).replace(/\\/g,'\\\\').replace(/\'/g,"\\'")+'\')">';
-      h+='<div class="ch"><span class="cl">'+esc(gState)+' \u2014 L'+ln+'</span><span class="cs">'+(ic?'Copied!':'Click to copy')+'</span></div>';
-      h+='<div class="ct">'+hlS(sl.text,cSt)+'</div></div>';
-    });
+    h+='<div class="hint">Leave off if your script already has state values baked in. Turn on to generate variations of each STATE-tagged line across multiple states.</div>';
   }
   h+='</div>';
 
-  if(voiceDesc){
-    h+='<div class="foot"><div class="fl">Voice</div><div class="ft">'+esc(voiceDesc.substring(0,120))+(voiceDesc.length>120?'...':'')+'</div></div>';
-  }
-
+  h+='<button class="btngen" onclick="doGen()">'+(showGen?'Re-generate Prompts':'Generate Prompts')+'</button>';
+  if(showGen)h+=buildGen();
   document.getElementById('app').innerHTML=h;
 }
 
+// === BUILD GEN (inline section) ===
+function buildGen(){
+  detectKeys();
+  var bLines=[],sLines=[];
+  dLines.forEach(function(l){if(l.isState)sLines.push(l);else bLines.push(l)});
+  var sts=dStatesForGen;
+  var hasMult=statesOn&&sLines.length>0&&sts.length>0;
+  var tB=bLines.length;
+  if(!gState&&sts.length>0)gState=sts[0].name;
+  var cSt=null;sts.forEach(function(s){if(s.name===gState)cSt=s});
+  var total=hasMult?(tB+sLines.length*sts.length):dLines.length;
+  var cp=countCopied();
+
+  var h='<div id="gen-section" style="margin-top:40px;padding-top:28px;border-top:1px solid #2a2a4a">';
+  h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:20px;flex-wrap:wrap">';
+  h+='<div><h2 style="margin-bottom:6px">Prompts</h2>';
+  h+='<p style="font-size:13px;color:#94a3b8"><span class="accent">';
+  h+=hasMult?(tB+' broad + '+(sLines.length*sts.length)+' state = '+total+' total'):(total+' prompt'+(total===1?'':'s'));
+  h+='</span> <span style="color:#64748b">\u00B7 '+cp+'/'+total+' copied</span></p></div>';
+  h+='<button class="prev-toggle'+(showFull?' on':'')+'" onclick="toggleFull()">'+(showFull?'\u25BC Hide full prompt':'\u25B6 Show full prompt')+'</button>';
+  h+='</div>';
+
+  if(hasMult){
+    h+='<div class="tabs"><button class="tab'+(gTab==='broad'?' active':'')+'" onclick="setGT(\'broad\')">Batch 1: Broad ('+tB+')</button>';
+    h+='<button class="tab'+(gTab==='state'?' active':'')+'" onclick="setGT(\'state\')">Batch 2: State ('+sLines.length+' x '+sts.length+')</button></div>';
+    if(gTab==='state'){
+      h+='<div class="pills">';
+      sts.forEach(function(s){h+='<button class="pill'+(gState===s.name?' active':'')+'" onclick="setGS(\''+esc(s.name)+'\')">'+esc(s.name)+'</button>'});
+      h+='</div>';
+    }
+  }
+
+  h+='<div class="cards">';
+  if(!hasMult){
+    // Flat list: every line is one prompt (state-tagged lines use raw text)
+    dLines.forEach(function(l,i){
+      var ln=i+1;var cid='broad_L'+ln;var ic=cpCard===cid;var ts=copied[cid];var done=!!ts;
+      var lbl=l.isState?'State':'Broad';
+      h+='<div class="card'+(ic?' cp':'')+(done&&!ic?' done':'')+'" onclick="cpC(\''+cid+'\')">';
+      h+='<div class="ch"><span class="cl">'+lbl+' \u2014 L'+ln+'</span><span class="cs">'+(ic?'Copied!':(done?'\u2713 Copied \u00B7 click to re-copy':'Click to copy'))+'</span></div>';
+      h+='<div class="ct">'+esc(l.text)+'</div>';
+      if(done&&!ic)h+='<div class="cts">'+esc(fmtStamp(ts))+'</div>';
+      if(showFull)h+='<div class="cfull" onclick="event.stopPropagation()">'+esc(buildP(l.text))+'</div>';
+      h+='</div>';
+    });
+  }else if(gTab==='broad'){
+    bLines.forEach(function(bl){
+      var ln=dLines.indexOf(bl)+1;var cid='broad_L'+ln;var ic=cpCard===cid;var ts=copied[cid];var done=!!ts;
+      h+='<div class="card'+(ic?' cp':'')+(done&&!ic?' done':'')+'" onclick="cpC(\''+cid+'\')">';
+      h+='<div class="ch"><span class="cl">Broad \u2014 L'+ln+'</span><span class="cs">'+(ic?'Copied!':(done?'\u2713 Copied \u00B7 click to re-copy':'Click to copy'))+'</span></div>';
+      h+='<div class="ct">'+esc(bl.text)+'</div>';
+      if(done&&!ic)h+='<div class="cts">'+esc(fmtStamp(ts))+'</div>';
+      if(showFull)h+='<div class="cfull" onclick="event.stopPropagation()">'+esc(buildP(bl.text))+'</div>';
+      h+='</div>';
+    });
+  }else if(cSt){
+    sLines.forEach(function(sl){
+      var ln=dLines.indexOf(sl)+1;var cid=gState+'_L'+ln;var ic=cpCard===cid;var ts=copied[cid];var done=!!ts;
+      h+='<div class="card'+(ic?' cp':'')+(done&&!ic?' done':'')+'" onclick="cpC(\''+cid+'\')">';
+      h+='<div class="ch"><span class="cl">'+esc(gState)+' \u2014 L'+ln+'</span><span class="cs">'+(ic?'Copied!':(done?'\u2713 Copied \u00B7 click to re-copy':'Click to copy'))+'</span></div>';
+      h+='<div class="ct">'+hlS(sl.text,cSt)+'</div>';
+      if(done&&!ic)h+='<div class="cts">'+esc(fmtStamp(ts))+'</div>';
+      if(showFull)h+='<div class="cfull" onclick="event.stopPropagation()">'+esc(buildP(fillS(sl.text,cSt)))+'</div>';
+      h+='</div>';
+    });
+  }
+  h+='</div></div>';
+  return h;
+}
+function toggleFull(){showFull=!showFull;updateGen()}
+function setStates(on){if(statesOn===on)return;saveF();statesOn=on;if(on){detectKeys()}renderSetup()}
+
+// Partial update for tab/pill/copy clicks — avoids rebuilding the setup form
+function updateGen(){
+  var el=document.getElementById('gen-section');
+  if(!el)return renderSetup();
+  el.outerHTML=buildGen();
+}
+
 // === ACTIONS ===
+function handleImg(input){
+  if(input.files&&input.files[0])readImageFile(input.files[0]);
+}
+function readImageFile(f){
+  if(!f||!/^image\//.test(f.type)){alert('That file is not an image.');return}
+  imgName=f.name;
+  var reader=new FileReader();
+  reader.onload=function(ev){imgData=ev.target.result;saveF();renderSetup()};
+  reader.readAsDataURL(f);
+}
+function dzOver(e){e.preventDefault();e.stopPropagation();var z=document.getElementById('dropzone');if(z)z.classList.add('drag')}
+function dzLeave(e){e.preventDefault();e.stopPropagation();var z=document.getElementById('dropzone');if(z)z.classList.remove('drag')}
+function dzDrop(e){
+  e.preventDefault();e.stopPropagation();
+  var z=document.getElementById('dropzone');if(z)z.classList.remove('drag');
+  var dt=e.dataTransfer;if(!dt)return;
+  if(dt.files&&dt.files.length)readImageFile(dt.files[0]);
+}
 function previewScript(val){
   scriptRaw=val;
   dLines=parseScript(val);
+  // Re-render just the parsed preview area — but simpler to just re-render
+  // We save cursor position to not disrupt typing
   var el=document.getElementById('f_script');
   var pos=el?el.selectionStart:0;
   renderSetup();
   var el2=document.getElementById('f_script');
   if(el2){el2.focus();el2.selectionStart=el2.selectionEnd=pos}
 }
+function onAttrs(v){
+  jsonAttrs=v;
+  var el=document.querySelector('#f_json');if(!el)return;
+  var next=el.nextElementSibling;
+  if(next&&(next.textContent.indexOf('Invalid JSON')===0||next.textContent.indexOf('\u2713 Valid JSON')===0))next.remove();
+  if(attrMode!=='json')return;
+  var t=jsonAttrs.trim();if(!t)return;
+  var r=parseAttrs();
+  var banner=document.createElement('div');
+  if(!r.ok){banner.style.cssText='padding:10px 14px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.3);border-radius:8px;font-size:12px;color:#f87171;margin-top:-8px;margin-bottom:16px';banner.textContent='Invalid JSON: '+(r.err||'');}
+  else{banner.style.cssText='padding:10px 14px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:8px;font-size:12px;color:#22c55e;margin-top:-8px;margin-bottom:16px';banner.textContent='\u2713 Valid JSON';}
+  el.insertAdjacentElement('afterend',banner);
+}
+function setMode(m){if(attrMode===m)return;saveF();attrMode=m;renderSetup()}
 function togLine(i){dLines[i].isState=!dLines[i].isState;detectKeys();renderSetup()}
 function addSt(){var s={name:'',swaps:{}};swKeys.forEach(function(k){s.swaps[k]=''});dStates.push(s);renderSetup()}
 function rmSt(i){dStates.splice(i,1);renderSetup()}
@@ -432,43 +566,45 @@ function updSS(i,k,v){if(!dStates[i].swaps)dStates[i].swaps={};dStates[i].swaps[
 function doGen(){
   saveF();detectKeys();
   for(var i=0;i<dStates.length;i++){var el=document.getElementById('sn_'+i);if(el)dStates[i].name=el.value}
-  for(var i=0;i<dStates.length;i++){
-    if(!dStates[i].swaps)dStates[i].swaps={};
-    for(var j=0;j<swKeys.length;j++){
-      var k=swKeys[j];var el=document.getElementById('ss_'+i+'_'+j);
-      if(el)dStates[i].swaps[k]=el.value;
-    }
-  }
+  for(var i=0;i<dStates.length;i++){if(!dStates[i].swaps)dStates[i].swaps={};for(var j=0;j<swKeys.length;j++){var k=swKeys[j];var el=document.getElementById('ss_'+i+'_'+k);if(el)dStates[i].swaps[k]=el.value}}
   var filled=dStates.filter(function(s){return s.name.trim()!==''});
   dStatesForGen=filled;
-  view='generator';gTab='broad';gState='';cpCard=null;
-  renderGen();window.scrollTo(0,0);
+  showGen=true;gTab='broad';cpCard=null;
+  persistCurrentJob();
+  renderSetup();
+  var el=document.getElementById('gen-section');
+  if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
 }
-function backSet(){view='setup';renderSetup();window.scrollTo(0,0)}
-function setGT(t){gTab=t;cpCard=null;renderGen()}
-function setGS(n){gState=n;cpCard=null;renderGen()}
+function setGT(t){gTab=t;cpCard=null;updateGen()}
+function setGS(n){gState=n;cpCard=null;updateGen()}
 
 function cpC(cid){
-  var dial,lab;
-  if(cid.indexOf('broad_')===0||cid.indexOf('state_')===0){
+  var dial;
+  if(cid.indexOf('broad_')===0){
     var ln=parseInt(cid.split('L')[1]);
-    dial=stripTokens(dLines[ln-1].text);lab=cid;
+    dial=dLines[ln-1].text;
   }else{
     var ui=cid.lastIndexOf('_L');
     var sn=cid.substring(0,ui);
     var ln=parseInt(cid.substring(ui+2));
     var sd=null;dStates.forEach(function(s){if(s.name===sn)sd=s});
     dial=fillS(dLines[ln-1].text,sd);
-    lab=cid.toLowerCase().replace(/\s+/g,'_');
   }
-  var json=buildP(dial,lab);
+  var json=buildP(dial);
   navigator.clipboard.writeText(json).then(function(){
-    cpCard=cid;renderGen();
-    setTimeout(function(){cpCard=null;renderGen()},1500);
+    cpCard=cid;copied[cid]=nowISO();persistCurrentJob();updateGen();
+    setTimeout(function(){cpCard=null;updateGen()},1500);
   });
 }
 
-renderSetup();
+// Prevent the browser from opening files if the drop misses the zone
+window.addEventListener('dragover',function(e){e.preventDefault()});
+window.addEventListener('drop',function(e){e.preventDefault()});
+
+// === INIT ===
+loadUser();loadJobs();
+if(!uName){view='welcome';renderWelcome()}
+else{view='jobs';renderJobs()}
 </script>
 </body>
 </html>
