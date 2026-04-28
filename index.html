@@ -141,7 +141,7 @@ var dLines=[]; // {text,isState}
 var dStates=[{name:'',swaps:{}},{name:'',swaps:{}},{name:'',swaps:{}},{name:'',swaps:{}},{name:'',swaps:{}}];
 var swKeys=[];
 var dStatesForGen=[];
-var gTab='broad',gState='',cpCard=null;
+var gTab='broad',gState='',cpCard=null,cpTimeout=null;
 var showGen=false;
 var showFull=false;
 
@@ -253,6 +253,12 @@ function parseAttrs(){
   catch(e){return{ok:false,err:e.message}}
 }
 function escapeDial(d){return d.replace(/\\/g,'\\\\').replace(/"/g,'\\"')}
+// Strip visual markup that shouldn't make it into the prompt output
+function cleanDialogue(d){
+  return (d||'')
+    .replace(/\*\*([^*]+)\*\*/g,'$1')      // **bold** -> bold
+    .replace(/\[\[([^\]]+)\]\]/g,'$1');    // [[value]] -> value
+}
 // Find the first object in the JSON tree that already has a `dialogue` key
 function findDialogueHost(o){
   if(!o||typeof o!=='object'||Array.isArray(o))return null;
@@ -261,6 +267,7 @@ function findDialogueHost(o){
   return null;
 }
 function buildP(dial){
+  dial=cleanDialogue(dial);
   var raw=(jsonAttrs||'').trim();
   if(!raw)return'character says ("'+escapeDial(dial)+'")';
   if(attrMode==='text'){
@@ -294,9 +301,10 @@ function parseScript(raw){
     if(!line)continue;
     var cleaned=line.replace(/^\d+[\.\)\:\-\s]+/,'').trim();
     if(cleaned){
-      // If user manually toggled, preserve that; otherwise auto-detect {tokens} or [UPPERCASE] placeholders
+      // If user manually toggled, preserve that; otherwise auto-detect anything that looks state-specific:
+      // {token}, [UPPER_TOKEN], [Tampa] (single brackets), [[anything]] (double brackets), **word** (bold)
       var wasState=dLines[result.length]?dLines[result.length].isState:false;
-      var hasTokens=/\{[^}]+\}|\[[A-Z][A-Z0-9_]*\]/.test(cleaned);
+      var hasTokens=/\{[^}]+\}|\[\[[^\]]+\]\]|\*\*[^*]+\*\*|\[[A-Za-z][^\]]*\]/.test(cleaned);
       result.push({text:cleaned,isState:wasState||hasTokens});
     }
   }
@@ -640,8 +648,9 @@ function cpC(cid){
   }
   var json=buildP(dial);
   navigator.clipboard.writeText(json).then(function(){
+    if(cpTimeout){clearTimeout(cpTimeout);cpTimeout=null}
     cpCard=cid;copied[cid]=nowISO();persistCurrentJob();updateGen();
-    setTimeout(function(){cpCard=null;updateGen()},1500);
+    cpTimeout=setTimeout(function(){cpCard=null;cpTimeout=null;updateGen()},1500);
   });
 }
 
