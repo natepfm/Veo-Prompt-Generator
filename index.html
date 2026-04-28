@@ -208,6 +208,8 @@ function countPrompts(){
   return dLines.length;
 }
 function countCopied(){var n=0;for(var k in copied){if(copied[k])n++}return n}
+// Persist on every edit, but only after the job has been created (first Generate)
+function liveSave(){if(curJobId!=null)persistCurrentJob()}
 function fmtTime(iso){if(!iso||iso===true)return'';var d=new Date(iso);var h=d.getHours(),m=d.getMinutes(),ap=h>=12?'pm':'am';h=h%12||12;return h+':'+(m<10?'0':'')+m+ap}
 function fmtStamp(iso){if(!iso||iso===true)return'';var d=new Date(iso),t=new Date();var same=d.toDateString()===t.toDateString();if(same)return'Copied '+fmtTime(iso);var pad=function(n){return(n<10?'0':'')+n};return'Copied '+(d.getMonth()+1)+'/'+d.getDate()+' '+fmtTime(iso)}
 
@@ -408,7 +410,7 @@ function renderSetup(){
 
   // Section 1: Project + Image
   h+='<div class="sec"><h2><span class="sn">1</span>Project &amp; Reference Image</h2>';
-  h+='<label>Project Name</label><input type="text" id="f_pn" value="'+esc(pName)+'" placeholder="e.g. Selling Christmas \u2014 State Podcast">';
+  h+='<label>Project Name</label><input type="text" id="f_pn" value="'+esc(pName)+'" placeholder="e.g. Selling Christmas \u2014 State Podcast" oninput="pName=this.value;liveSave()">';
   h+='<label>Reference Image</label>';
   h+='<div id="dropzone" class="upload-zone'+(imgData?' has-img':'')+'" onclick="document.getElementById(\'f_img\').click()" ondragover="dzOver(event)" ondragleave="dzLeave(event)" ondrop="dzDrop(event)">';
   if(imgData){
@@ -591,6 +593,7 @@ function dzDrop(e){
 function previewScript(val){
   scriptRaw=val;
   dLines=parseScript(val);
+  liveSave();
   // Re-render just the parsed preview area — but simpler to just re-render
   // We save cursor position to not disrupt typing
   var el=document.getElementById('f_script');
@@ -600,7 +603,7 @@ function previewScript(val){
   if(el2){el2.focus();el2.selectionStart=el2.selectionEnd=pos}
 }
 function onAttrs(v){
-  jsonAttrs=v;
+  jsonAttrs=v;liveSave();
   var el=document.querySelector('#f_json');if(!el)return;
   var next=el.nextElementSibling;
   if(next&&(next.textContent.indexOf('Invalid JSON')===0||next.textContent.indexOf('\u2713 Valid JSON')===0))next.remove();
@@ -613,11 +616,11 @@ function onAttrs(v){
   el.insertAdjacentElement('afterend',banner);
 }
 function setMode(m){if(attrMode===m)return;saveF();attrMode=m;renderSetup()}
-function togLine(i){dLines[i].isState=!dLines[i].isState;detectKeys();renderSetup()}
-function addSt(){var s={name:'',swaps:{}};swKeys.forEach(function(k){s.swaps[k]=''});dStates.push(s);renderSetup()}
-function rmSt(i){dStates.splice(i,1);renderSetup()}
-function updSN(i,v){dStates[i].name=v}
-function updSS(i,k,v){if(!dStates[i].swaps)dStates[i].swaps={};dStates[i].swaps[k]=v}
+function togLine(i){dLines[i].isState=!dLines[i].isState;detectKeys();liveSave();renderSetup()}
+function addSt(){var s={name:'',swaps:{}};swKeys.forEach(function(k){s.swaps[k]=''});dStates.push(s);liveSave();renderSetup()}
+function rmSt(i){dStates.splice(i,1);liveSave();renderSetup()}
+function updSN(i,v){dStates[i].name=v;liveSave()}
+function updSS(i,k,v){if(!dStates[i].swaps)dStates[i].swaps={};dStates[i].swaps[k]=v;liveSave()}
 
 function doGen(){
   saveF();detectKeys();
