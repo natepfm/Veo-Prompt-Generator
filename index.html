@@ -247,11 +247,20 @@ function hlS(t,sd){
   return h;
 }
 
+// Replace OS-substituted "smart" punctuation with the ASCII equivalents JSON expects.
+// macOS often turns " " into " " and ' ' into ' ' which breaks JSON.parse.
+function sanitizeJson(s){
+  return (s||'')
+    .replace(/[“”„‟″‶]/g,'"')
+    .replace(/[‘’‚‛′‵]/g,"'")
+    .replace(/[–—−]/g,'-')
+    .replace(/ /g,' ');
+}
 function parseAttrs(){
   var raw=(jsonAttrs||'').trim();
   if(!raw)return{ok:true,empty:true,obj:null};
   if(attrMode!=='json')return{ok:true,empty:false,obj:null};
-  try{var o=JSON.parse(raw);if(o&&typeof o==='object'&&!Array.isArray(o))return{ok:true,empty:false,obj:o};return{ok:false,err:'Root must be a JSON object.'}}
+  try{var o=JSON.parse(sanitizeJson(raw));if(o&&typeof o==='object'&&!Array.isArray(o))return{ok:true,empty:false,obj:o};return{ok:false,err:'Root must be a JSON object.'}}
   catch(e){return{ok:false,err:e.message}}
 }
 function escapeDial(d){return d.replace(/\\/g,'\\\\').replace(/"/g,'\\"')}
@@ -281,7 +290,7 @@ function buildP(dial,lineNum){
     return out+'\n\ncharacter says ("'+escapeDial(dial)+'")';
   }
   // JSON mode
-  var source=raw.replace(/\{L\}/g,Lpad).replace(/\{line\}/g,L);
+  var source=sanitizeJson(raw).replace(/\{L\}/g,Lpad).replace(/\{line\}/g,L);
   var hasPlaceholder=source.indexOf('{dialogue}')!==-1;
   if(hasPlaceholder){
     var safeInner=JSON.stringify(dial).slice(1,-1); // JSON-escaped, no outer quotes
@@ -433,7 +442,7 @@ function renderSetup(){
   h+='<div class="mode-toggle"><button class="mtab'+(isJson?' active':'')+'" onclick="setMode(\'json\')">JSON</button><button class="mtab'+(!isJson?' active':'')+'" onclick="setMode(\'text\')">Text</button></div></div>';
   if(isJson){
     h+='<div class="hint">Paste any JSON attributes you want baked into every prompt. Dialogue fills the first <code>dialogue</code> key found in your JSON. Placeholders: <code>{dialogue}</code> for explicit dialogue placement, <code>{L}</code> for line number padded to 2 digits (e.g. <code>06</code>), <code>{line}</code> for unpadded line number. Empty = output is just <code>character says ("dialogue")</code>.</div>';
-    h+='<textarea id="f_json" placeholder=\'{\\n  "style": "photorealistic, natural motion",\\n  "camera": { "movement": "locked" },\\n  "voice_lock": { "voice_description": "50-year-old Boston accent" }\\n}\' style="min-height:140px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px" oninput="onAttrs(this.value)">'+esc(jsonAttrs)+'</textarea>';
+    h+='<textarea id="f_json" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder=\'{\\n  "style": "photorealistic, natural motion",\\n  "camera": { "movement": "locked" },\\n  "voice_lock": { "voice_description": "50-year-old Boston accent" }\\n}\' style="min-height:140px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px" oninput="onAttrs(this.value)">'+esc(jsonAttrs)+'</textarea>';
     if(jsonAttrs.trim()&&!attrCheck.ok){
       h+='<div style="padding:10px 14px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.3);border-radius:8px;font-size:12px;color:#f87171;margin-top:-8px">Invalid JSON: '+esc(attrCheck.err||'')+'</div>';
     }else if(jsonAttrs.trim()&&attrCheck.ok){
