@@ -268,20 +268,24 @@ function findDialogueHost(o){
   for(var k in o){if(Object.prototype.hasOwnProperty.call(o,k)){var f=findDialogueHost(o[k]);if(f)return f}}
   return null;
 }
-function buildP(dial){
+function buildP(dial,lineNum){
   dial=cleanDialogue(dial);
   var raw=(jsonAttrs||'').trim();
   if(!raw)return'character says ("'+escapeDial(dial)+'")';
+  // Line-number placeholders: {L} = zero-padded 2 digits, {line} = unpadded
+  var L=lineNum!=null?String(lineNum):'';
+  var Lpad=lineNum!=null?(lineNum<10?'0'+lineNum:String(lineNum)):'';
   if(attrMode==='text'){
-    if(raw.indexOf('{dialogue}')!==-1)return raw.replace(/\{dialogue\}/g,dial);
-    return raw+'\n\ncharacter says ("'+escapeDial(dial)+'")';
+    var out=raw.replace(/\{L\}/g,Lpad).replace(/\{line\}/g,L);
+    if(out.indexOf('{dialogue}')!==-1)return out.replace(/\{dialogue\}/g,dial);
+    return out+'\n\ncharacter says ("'+escapeDial(dial)+'")';
   }
   // JSON mode
-  var hasPlaceholder=raw.indexOf('{dialogue}')!==-1;
-  var source=raw;
+  var source=raw.replace(/\{L\}/g,Lpad).replace(/\{line\}/g,L);
+  var hasPlaceholder=source.indexOf('{dialogue}')!==-1;
   if(hasPlaceholder){
     var safeInner=JSON.stringify(dial).slice(1,-1); // JSON-escaped, no outer quotes
-    source=raw.replace(/\{dialogue\}/g,safeInner);
+    source=source.replace(/\{dialogue\}/g,safeInner);
   }
   var p;try{p=JSON.parse(source)}catch(e){return'character says ("'+escapeDial(dial)+'")'}
   if(!p||typeof p!=='object'||Array.isArray(p))return'character says ("'+escapeDial(dial)+'")';
@@ -428,7 +432,7 @@ function renderSetup(){
   h+='<div class="sec"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap"><h2 style="margin-bottom:0"><span class="sn">2</span>Paste Attributes</h2>';
   h+='<div class="mode-toggle"><button class="mtab'+(isJson?' active':'')+'" onclick="setMode(\'json\')">JSON</button><button class="mtab'+(!isJson?' active':'')+'" onclick="setMode(\'text\')">Text</button></div></div>';
   if(isJson){
-    h+='<div class="hint">Paste any JSON attributes you want baked into every prompt. Dialogue fills the first <code>dialogue</code> key found in your JSON (e.g. <code>audio.dialogue</code>). If none exists, one gets added. Use <code>{dialogue}</code> anywhere to pin the exact location. Empty = output is just <code>character says ("dialogue")</code>.</div>';
+    h+='<div class="hint">Paste any JSON attributes you want baked into every prompt. Dialogue fills the first <code>dialogue</code> key found in your JSON. Placeholders: <code>{dialogue}</code> for explicit dialogue placement, <code>{L}</code> for line number padded to 2 digits (e.g. <code>06</code>), <code>{line}</code> for unpadded line number. Empty = output is just <code>character says ("dialogue")</code>.</div>';
     h+='<textarea id="f_json" placeholder=\'{\\n  "style": "photorealistic, natural motion",\\n  "camera": { "movement": "locked" },\\n  "voice_lock": { "voice_description": "50-year-old Boston accent" }\\n}\' style="min-height:140px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px" oninput="onAttrs(this.value)">'+esc(jsonAttrs)+'</textarea>';
     if(jsonAttrs.trim()&&!attrCheck.ok){
       h+='<div style="padding:10px 14px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.3);border-radius:8px;font-size:12px;color:#f87171;margin-top:-8px">Invalid JSON: '+esc(attrCheck.err||'')+'</div>';
@@ -436,7 +440,7 @@ function renderSetup(){
       h+='<div style="padding:10px 14px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:8px;font-size:12px;color:#22c55e;margin-top:-8px">\u2713 Valid JSON</div>';
     }
   }else{
-    h+='<div class="hint">Write your prompt as plain text. Use <code>{dialogue}</code> anywhere to drop the line in-place \u2014 otherwise <code>character says ("dialogue")</code> gets appended at the end. Empty = output is just <code>character says ("dialogue")</code>.</div>';
+    h+='<div class="hint">Write your prompt as plain text. Placeholders: <code>{dialogue}</code> drops the line in-place (otherwise it gets appended), <code>{L}</code> = line number padded to 2 digits, <code>{line}</code> = unpadded line number. Empty = output is just <code>character says ("dialogue")</code>.</div>';
     h+='<textarea id="f_json" placeholder="e.g. A cinematic wide shot of a woman in a diner. She looks at the camera and {dialogue}" style="min-height:140px;line-height:1.5" oninput="onAttrs(this.value)">'+esc(jsonAttrs)+'</textarea>';
   }
   h+='</div>';
@@ -534,7 +538,7 @@ function buildGen(){
       h+='<div class="ch"><span class="cl">'+lbl+' \u2014 L'+ln+'</span><span class="cs">'+(ic?'Copied!':(done?'\u2713 Copied \u00B7 click to re-copy':'Click to copy'))+'</span></div>';
       h+='<div class="ct">'+esc(l.text)+'</div>';
       if(done&&!ic)h+='<div class="cts">'+esc(fmtStamp(ts))+'</div>';
-      if(showFull)h+='<div class="cfull" onclick="event.stopPropagation()">'+esc(buildP(l.text))+'</div>';
+      if(showFull)h+='<div class="cfull" onclick="event.stopPropagation()">'+esc(buildP(l.text,ln))+'</div>';
       h+='</div>';
     });
   }else if(gTab==='broad'){
@@ -544,7 +548,7 @@ function buildGen(){
       h+='<div class="ch"><span class="cl">Broad \u2014 L'+ln+'</span><span class="cs">'+(ic?'Copied!':(done?'\u2713 Copied \u00B7 click to re-copy':'Click to copy'))+'</span></div>';
       h+='<div class="ct">'+esc(bl.text)+'</div>';
       if(done&&!ic)h+='<div class="cts">'+esc(fmtStamp(ts))+'</div>';
-      if(showFull)h+='<div class="cfull" onclick="event.stopPropagation()">'+esc(buildP(bl.text))+'</div>';
+      if(showFull)h+='<div class="cfull" onclick="event.stopPropagation()">'+esc(buildP(bl.text,ln))+'</div>';
       h+='</div>';
     });
   }else if(cSt){
@@ -554,7 +558,7 @@ function buildGen(){
       h+='<div class="ch"><span class="cl">'+esc(gState)+' \u2014 L'+ln+'</span><span class="cs">'+(ic?'Copied!':(done?'\u2713 Copied \u00B7 click to re-copy':'Click to copy'))+'</span></div>';
       h+='<div class="ct">'+hlS(sl.text,cSt)+'</div>';
       if(done&&!ic)h+='<div class="cts">'+esc(fmtStamp(ts))+'</div>';
-      if(showFull)h+='<div class="cfull" onclick="event.stopPropagation()">'+esc(buildP(fillS(sl.text,cSt)))+'</div>';
+      if(showFull)h+='<div class="cfull" onclick="event.stopPropagation()">'+esc(buildP(fillS(sl.text,cSt),ln))+'</div>';
       h+='</div>';
     });
   }
@@ -638,18 +642,18 @@ function setGT(t){gTab=t;cpCard=null;updateGen()}
 function setGS(n){gState=n;cpCard=null;updateGen()}
 
 function cpC(cid){
-  var dial;
+  var dial,ln;
   if(cid.indexOf('broad_')===0){
-    var ln=parseInt(cid.split('L')[1]);
+    ln=parseInt(cid.split('L')[1]);
     dial=dLines[ln-1].text;
   }else{
     var ui=cid.lastIndexOf('_L');
     var sn=cid.substring(0,ui);
-    var ln=parseInt(cid.substring(ui+2));
+    ln=parseInt(cid.substring(ui+2));
     var sd=null;dStates.forEach(function(s){if(s.name===sn)sd=s});
     dial=fillS(dLines[ln-1].text,sd);
   }
-  var json=buildP(dial);
+  var json=buildP(dial,ln);
   navigator.clipboard.writeText(json).then(function(){
     if(cpTimeout){clearTimeout(cpTimeout);cpTimeout=null}
     cpCard=cid;copied[cid]=nowISO();persistCurrentJob();updateGen();
